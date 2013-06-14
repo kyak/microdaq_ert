@@ -3,7 +3,7 @@ Simulink (Embedded Coder) Target for MicroDAQ Real-Time Measurement System
 
 **Summary:**
 
-MicroDAQ (http://http://www.embedded-solutions.pl) is a Real-Time Measurement
+MicroDAQ (http://www.embedded-solutions.pl) is a Real-Time Measurement
 and Rapid Control Prototyping System.
 
 Simulink (http://www.mathworks.com/products/simulink) is a leading environment
