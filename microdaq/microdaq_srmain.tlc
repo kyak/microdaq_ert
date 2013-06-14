@@ -1,0 +1,132 @@
+%selectfile NULL_FILE
+
+%function FcnSingleTaskingMain(mainFileName) void
+  
+  %%if GenerateSampleERTMain
+    %%assign ::CompiledModel.GenerateSampleERTMain = TLC_FALSE
+    %%warning Overriding example (e)rt_main.c!
+  %%endif
+
+  %assign cFile = LibCreateSourceFile("Source", "Custom", mainFileName)
+
+  %openfile tmpBuf
+  static boolean_T OverrunFlag = 0;\
+  
+  %<SLibDeclareFcnProtoCtlVariables()>\
+  
+  %<LibWriteModelData()>\
+  %closefile tmpBuf
+  
+  %<LibSetSourceFileSection(cFile, "Definitions", tmpBuf)>
+  
+  %openfile tmpBuf
+  #include "%<LibGetMdlPubHdrBaseName()>.h"
+  #include <xdc/std.h>
+  #include <xdc/runtime/System.h>
+
+  #include <ti/sysbios/BIOS.h>
+  #include <ti/sysbios/knl/Clock.h>
+
+  %%assign SAMPLE_TIME = CAST("Unsigned",1/%<CompiledModel.FundamentalStepSize>)
+  %%#define STEP_SIZE %<SAMPLE_TIME>
+
+  %closefile tmpBuf
+ 
+  %<LibSetSourceFileSection(cFile, "Includes", tmpBuf)>
+  
+  %openfile tmpBuf
+  %assign fcnReturns = "void"
+  %assign fcnName = "rt_OneStep"
+  %assign fcnParams = ""
+  %assign fcnCategory = "main"
+  %createrecord fcnRec {Name fcnName; Returns fcnReturns; Params fcnParams; ...
+    Abstract ""; Category fcnCategory; GeneratedBy "bareboard_srmain.tlc"; ...
+    Type "Utility"}
+  %<SLibDumpFunctionBanner(fcnRec)>
+  %undef fcnRec
+  %<fcnReturns> %<fcnName>(%<fcnParams>)
+  {
+    /* Disable interrupts here */
+    
+    /* Check for overun */
+    if (OverrunFlag++) {
+      %<LibSetRTModelErrorStatus("\"Overrun\"")>;
+      return;
+    }
+    
+    /* Save FPU context here (if necessary) */
+    /* Re-enable timer or interrupt here */
+    %assign varsbuf = LibWriteModelInputs()
+    %if varsbuf != ""
+      /* Remove conditional, and set model inputs here */
+      %<varsbuf>\
+    %endif
+    
+    %<LibCallModelStep(0)>\
+    
+    %assign varsbuf = LibWriteModelOutputs()
+    %if varsbuf != ""
+      /* Remove conditional, and get model outputs here */
+      %<varsbuf>\
+    %endif
+    
+    OverrunFlag--;
+    
+    /* Disable interrupts here */
+    /* Restore FPU context here (if necessary) */
+    /* Enable interrupts here */
+  }
+
+  Void clk0Fxn(UArg arg0);
+
+  %assign fcnReturns = "int_T"
+  %assign fcnName = "main"
+  %assign fcnParams = "int_T argc, const char_T *argv[]"
+  %assign fcnCategory = "main"
+  %createrecord fcnRec {Name fcnName; Returns fcnReturns; Params fcnParams; ...
+    Abstract ""; Category fcnCategory; GeneratedBy "microdaq_srmain.tlc"; ...
+    Type "Main"}
+  %<SLibDumpFunctionBanner(fcnRec)>
+  %undef fcnRec
+  %<fcnReturns> %<fcnName>(%<fcnParams>)
+  {
+
+    /* Initialize model */
+    %<LibCallModelInitialize()>\
+     
+    Clock_Params clkParams;
+
+    /* Create a periodic Clock Instance with period = 1 system time units */
+    Clock_Params_init(&clkParams);
+    clkParams.period = 1;
+    clkParams.startFlag = TRUE;
+    Clock_create(clk0Fxn, 10, &clkParams, NULL);
+
+    BIOS_start();
+
+    /* Terminate model */
+    /* %<LibCallModelTerminate()>\ */
+  }
+
+/*
+ *  ======== clk0Fxn =======
+ */
+Void clk0Fxn(UArg arg0)
+{
+    /* Base rate */
+    rt_OneStep();
+}
+
+  %closefile tmpBuf
+  
+  %<LibSetSourceFileSection(cFile, "Functions", tmpBuf)>
+  
+%endfunction
+
+%if !IsModelReferenceTarget()
+%%Might call %matlab here to find the version and use ert_main/rt_main
+%%accordingly.. From the other hand side, using the same name is even better
+  %assign mdlName = LibGetModelName()
+  %assign mainFileName = "main_%<mdlName>"
+  %<FcnSingleTaskingMain(mainFileName)>
+%endif
