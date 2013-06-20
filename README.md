@@ -14,7 +14,7 @@ generate C code and deploy your algorithms to target hardware.
 
 **Installation:**
 
-1) Windows/Linux: Have Code Composer Studio 5.3 installed (http://processors.wiki.ti.com/index.php/Download_CCS).
+1) Windows/Linux: Have Code Composer Studio 5.3 or 5.4 installed (http://processors.wiki.ti.com/index.php/Download_CCS).
 
 2) Windows: Install Device support files for OMAPL137:
 http://processors.wiki.ti.com/index.php/Device_support_files (download version for C6-Integra).
@@ -28,6 +28,7 @@ This step is not required, but it is strongly advised to get yourself familiar w
         
         mex -setup
 in MATLAB.
+Avoid using the lcc compiler which ships with MATLAB 32-bit for Windows. It is known to cause problems.
 
 5) Extract this package somewhere. Make sure there are no spaces/non-ASCII characters in path (just in case).
 
@@ -47,7 +48,7 @@ You should be good to go.
 
 - Simulink library blocks for:
 
-        * ADC, DAC, GPIO
+        * ADC, DAC, GPIO, PWM, Quadrature Encoder, PRU (for additional processing units)
 - More documentation
 - External Mode support
 - Execution in PIL mode
