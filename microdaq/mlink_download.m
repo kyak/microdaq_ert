@@ -5,8 +5,7 @@ if ispc
     suffix = arch(end-1:end);
     mlinklib = ['MLink',suffix];
 else
-    %mlinklib = 'libmlink';
-    error('MLink for Linux is not supported yet, choose to download via JTAG -\');
+    mlinklib = 'libmlink64';
 end
 % Load MLink library
 loadlibrary([TargetRoot,'/MLink/',mlinklib],[TargetRoot,'/MLink/MLink.h']);
