@@ -24,6 +24,10 @@ addpref('microdaq','TargetIP',tip{1});
 cd('../blocks');
 lct_genblocks;
 cd(curpath);
+% Generate rtiostream library
+cd('MLink');
+mdaq_makertiostreamlib;
+cd(curpath);
 % Generate help
 %cd('../help/source');
 %genhelp;
@@ -62,7 +66,7 @@ cd(curpath);
 % eval(['mex ',mexcmd]);
 % cd(curpath);
 % 
-% sl_refresh_customizations;
+sl_refresh_customizations;
 disp('<strong>MicroDAQ</strong> Target setup is complete!');
 disp('Explore <a href="matlab:cd([getpref(''microdaq'',''TargetRoot''),''/../demos''])">demos</a> directory and access <a href="matlab:doc -classic">documentation</a>');
 end
