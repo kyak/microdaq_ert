@@ -40,6 +40,7 @@ You should be good to go.
 
 - Automatic build and download to target using MLink or JTAG (selected by user)
 - Standalone execution on target (driven by SYS/BIOS timer)
+- Execution in PIL mode
 - Simulink library blocks for:
         
         * Built-in LEDs
@@ -51,5 +52,4 @@ You should be good to go.
         * ADC, DAC, GPIO, PWM, Quadrature Encoder, PRU (for additional processing units)
 - More documentation
 - External Mode support
-- Execution in PIL mode
 - PIL mode profiling
