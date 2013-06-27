@@ -1,1 +1,4 @@
 archives/*
+blocks/rtwmakecfg.m
+blocks/sfun_*
+microdaq/MLink/librtiostreamhst.*
