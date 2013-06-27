@@ -34,6 +34,8 @@
 #define IN
 #define IO
 
+EXTERNC MDAQ_API char *mlink_error( int err );
+
 EXTERNC MDAQ_API int mlink_connect(
 		IN	const char 	*addr,		
 		IN	uint16_t 	port,		
@@ -124,6 +126,23 @@ EXTERNC MDAQ_API int mlink_dsp_start(
 
 EXTERNC MDAQ_API int mlink_dsp_stop( 
 		IO	int			*link_fd );
+
+EXTERNC MDAQ_API int mlink_get_obj_size(
+		IO	int			*link_fd, 
+		IN	char		*var_name,
+		OUT	uint32_t	*size);
+
+EXTERNC MDAQ_API int mlink_get_obj( 
+		IO	int			*link_fd, 
+		IN	char		*obj_name, 
+		IO	void 		*data, 
+		IN	uint32_t	size);
+
+EXTERNC MDAQ_API int mlink_set_obj( 
+		IO	int			*link_fd, 
+		IN	char		*obj_name, 
+		IN	void 		*data, 
+		IN	uint32_t	size);
 
 EXTERNC MDAQ_API int mlink_enc_get(
 		IO	int 		*link_fd, 
