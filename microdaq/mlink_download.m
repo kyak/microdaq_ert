@@ -17,22 +17,25 @@ TargetIP = getpref('microdaq','TargetIP');
 disp('### Connecting to MicroDAQ...');
 result = calllib(mlinklib,'mlink_connect',TargetIP,4343,link_fd);
 if result < 0
-    errstr = sprintf('Error %d connecting to MicroDAQ',result);
-    disp(errstr);
+    out = calllib(mlinklib,'mlink_error',result);
+    unloadlibrary(mlinklib);
+    error('Error connecting to MicroDAQ: %s',out);
 end
 % Load DSP binary to MicroDAQ
 disp('### Loading DSP binary to MicroDAQ...');
 result = calllib(mlinklib,'mlink_dsp_load',link_fd.Value,outfile,'');
 if result < 0
-    errstr = sprintf('Error %d loading binary to MicroDAQ',result);
-    disp(errstr);
+    out = calllib(mlinklib,'mlink_error',result);
+    unloadlibrary(mlinklib);
+    error('Error loading binary to MicroDAQ: %s',out);
 end
 % Start DSP binary on MicroDAQ
 disp('### Starting DSP binary on MicroDAQ...');
 result = calllib(mlinklib,'mlink_dsp_start',link_fd.Value);
 if result < 0
-    errstr = sprintf('Error %d starting binary on MicroDAQ',result);
-    disp(errstr);
+    out = calllib(mlinklib,'mlink_error',result);
+    unloadlibrary(mlinklib);
+    error('Error starting binary on MicroDAQ: %s',out);
 end
 % Unload MLink library
 unloadlibrary(mlinklib);
