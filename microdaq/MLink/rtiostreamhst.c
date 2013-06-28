@@ -8,6 +8,7 @@
 #include "mex.h"
 
 #ifdef _WIN32
+#include <Windows.h>
 #define SLEEP_SET_OBJ Sleep(10);
 #else
 #include <unistd.h>
