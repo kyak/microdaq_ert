@@ -2,8 +2,12 @@ function mdaq_makertiostreamlib
 % Compile and link librtiostreamhst.dll/.so libraries for PIL
 
 %For testing.
-%rtiostream_wrapper([pwd,'/librtiostreamhst.so'],'unloadlibrary')
-%rtiostream_wrapper([pwd,'/librtiostreamhst.dll'],'unloadlibrary')
+% if isunix
+%     rtiostream_wrapper([pwd,'/librtiostreamhst.so'],'unloadlibrary');
+% else
+%     rtiostream_wrapper([pwd,'/librtiostreamhst.dll'],'unloadlibrary');
+% end
+
 if isunix
     mex('-c','CFLAGS=$CFLAGS -Wall -fPIC',['-I',fullfile(matlabroot,'rtw','c','src')],'rtiostreamhst.c');
     mex('LDFLAGS=-shared','CLIBS=','LDEXTENSION=.so',...
