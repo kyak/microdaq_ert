@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 
+#ifdef _WIN32
 #define APP_BUILD
+#endif
 
 #ifdef APP_BUILD
 #define EXTERNC
