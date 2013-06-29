@@ -60,7 +60,7 @@ RTIOSTREAMAPI int rtIOStreamRecv(
 {
     uint8_t *ptr = (uint8_t *)dst;
     uint8_t result = 0;
-    int i;
+    //int i;
        
     *sizeRecvd=0U;
     
@@ -100,7 +100,7 @@ RTIOSTREAMAPI int rtIOStreamRecv(
     }
     out_stream_pos += *sizeRecvd;
 
-    //printf("\nRcvd size: %d\n",size);
+//     printf("\nRcvd size: %d\n",size);
 //     printf("\nRcvd data: ");
 //     for (i = out_stream_pos-*sizeRecvd; i<out_stream_pos; i++) {
 //         printf("%0x ",out_stream[i]);
@@ -116,18 +116,12 @@ RTIOSTREAMAPI int rtIOStreamSend(
         size_t     * sizeSent)
 {
     uint8_t *ptr = (uint8_t *)src;
-    uint8_t result = 0;
-    int i;
+    //int i;
     
     *sizeSent=0U;
     
     was_sending = 1;
     out_stream_pos = 0;
-    out_flag = 0;
-    result = mlink_set_obj(&streamID, "out_flag", &out_flag, sizeof(out_flag));
-    if (result < 0)
-        return RTIOSTREAM_ERROR;
-    SLEEP_SET_OBJ
     
     while (*sizeSent < size) {
         in_stream[in_stream_pos+*sizeSent] = *ptr++;
@@ -135,7 +129,7 @@ RTIOSTREAMAPI int rtIOStreamSend(
     }
     in_stream_pos += *sizeSent;
 
-    //printf("\nSent size: %d\n",size);
+//     printf("\nSent size: %d\n",size);
 //     printf("\nSent data: ");
 //     for (i = in_stream_pos-*sizeSent; i<in_stream_pos; i++) {
 //         printf("%0x ",in_stream[i]);
