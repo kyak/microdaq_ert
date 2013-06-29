@@ -1,8 +1,8 @@
 #include "rtiostream.h"
 #include <stdint.h>
 
-static volatile uint8_t in_stream[300] = {0};
-static volatile uint8_t out_stream[300] = {0};
+static volatile uint8_t in_stream[1000] = {0};
+static volatile uint8_t out_stream[1000] = {0};
 static volatile uint8_t in_flag = 0;
 static volatile uint8_t out_flag = 0;
 static volatile uint32_t in_stream_pos = 0;

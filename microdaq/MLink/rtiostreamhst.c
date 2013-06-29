@@ -9,14 +9,14 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#define SLEEP_SET_OBJ Sleep(5);
+#define SLEEP_SET_OBJ Sleep(7);
 #else
 #include <unistd.h>
-#define SLEEP_SET_OBJ usleep(5000);
+#define SLEEP_SET_OBJ usleep(7000);
 #endif
 
-static volatile uint8_t in_stream[300] = {0};
-static volatile uint8_t out_stream[300] = {0};
+static volatile uint8_t in_stream[1000] = {0};
+static volatile uint8_t out_stream[1000] = {0};
 static uint8_t in_flag = 0;
 static uint8_t out_flag = 0;
 static volatile uint32_t in_stream_pos = 0;
@@ -65,13 +65,16 @@ RTIOSTREAMAPI int rtIOStreamRecv(
     *sizeRecvd=0U;
     
     if (was_sending == 1) { //we haven't send the buffer to target yet
-        in_stream_pos = 0; //since we are reading, it means that writing has finished
+        //since we are reading, it means that writing has finished
         in_flag = 1;
         was_sending = 0;
-        result = mlink_set_obj(&streamID, "in_stream", &in_stream, sizeof(in_stream));
+        //result = mlink_set_obj(&streamID, "in_stream", &in_stream, sizeof(in_stream));
+        //in_stream is assumed to be uint8s. Only send the actually written bytes
+        result = mlink_set_obj(&streamID, "in_stream", &in_stream, in_stream_pos);
         if (result < 0)
            return RTIOSTREAM_ERROR;
         SLEEP_SET_OBJ
+        in_stream_pos = 0; 
         //send the flag to target
         result = mlink_set_obj(&streamID, "in_flag", &in_flag, sizeof(in_flag));
         if (result < 0)
@@ -90,7 +93,8 @@ RTIOSTREAMAPI int rtIOStreamRecv(
     /* Get the data from target */
     /* TODO: possible to optimize: get only bytes from out_stream_pos to 
      * out_stream_pos+size */
-    result = mlink_get_obj(&streamID, "out_stream", &out_stream, sizeof(out_stream));
+    //result = mlink_get_obj(&streamID, "out_stream", &out_stream, sizeof(out_stream));
+    result = mlink_get_obj(&streamID, "out_stream", &out_stream, out_stream_pos+size);
     if (result < 0)
         return RTIOSTREAM_ERROR;
     
