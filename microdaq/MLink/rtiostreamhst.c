@@ -9,10 +9,10 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#define SLEEP_SET_OBJ Sleep(10);
+#define SLEEP_SET_OBJ Sleep(5);
 #else
 #include <unistd.h>
-#define SLEEP_SET_OBJ usleep(10000);
+#define SLEEP_SET_OBJ usleep(5000);
 #endif
 
 static volatile uint8_t in_stream[300] = {0};
