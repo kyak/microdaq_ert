@@ -24,10 +24,14 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
 
     % Run XDC Tools on SYS/BIOS configuration file
     copyfile([TargetRoot,'/clock.cfg']);
-    %TODO catch errors ('auto')
     Ts = str2double(get_param(modelName,'FixedStep'));
     % Clock.tickPeriod is in microseconds
-    Ts = Ts*1e6;
+    if isnan(Ts)
+        % 'auto' in model
+        Ts = 0.2*1e6;
+    else
+        Ts = Ts*1e6;
+    end
     fd = fopen('clock.cfg','a');
     fprintf(fd,'Clock.tickPeriod = %s;',num2str(Ts));
     fclose(fd);
