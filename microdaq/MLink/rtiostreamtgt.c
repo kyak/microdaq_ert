@@ -1,10 +1,10 @@
 #include "rtiostream.h"
 #include <stdint.h>
 
-static volatile uint8_t in_stream[1000] = {0};
-static volatile uint8_t out_stream[1000] = {0};
-static volatile uint8_t in_flag = 0;
-static volatile uint8_t out_flag = 0;
+static volatile uint8_t in_stream[2054] = {0};
+static volatile uint8_t out_stream[2054] = {0};
+static volatile uint32_t in_flag = 0;
+static volatile uint32_t out_flag = 0;
 static volatile uint32_t in_stream_pos = 0;
 static volatile uint32_t out_stream_pos = 0;
 static uint8_t was_sending = 0;
@@ -12,6 +12,13 @@ static uint8_t was_sending = 0;
 /* Initialize rtIOStream */
 int rtIOStreamOpen(int argc, void *argv[])
 {
+    /* Initialize flags here just in case */
+    in_flag = 0;
+    out_flag = 0;
+    in_stream_pos = 0;
+    out_stream_pos = 0;
+    was_sending = 0;
+
     return RTIOSTREAM_NO_ERROR;
 }
 
@@ -25,22 +32,33 @@ int rtIOStreamRecv(
         size_t * sizeRecvd) // The number of units of data received and copied into the buffer dst (zero if no data was copied).
 {
     uint8_t *ptr = (uint8_t *)dst;
-    
+
     *sizeRecvd=0U;
-    
+
+    /* One time set of actions when transitioning from send to receive. */
     if (was_sending == 1) {
-        out_stream_pos = 0;
-        out_flag = 1;
         was_sending = 0;
+        /* Reset the position in send buffer */
+        out_stream_pos = 0;
+        /* Since we are reading, it means that writing has finished */
+        out_flag = 1;
     }
-    
-    if (in_flag == 0) //No data to receive
+
+    if (in_flag == 0) /* No data to receive */
         return RTIOSTREAM_NO_ERROR;
 
+    /* Get the "size" number of bytes as requested by PIL protocol.
+     * Additionally, if we are outside the buffer, keep reading the
+     * last element. This should model buffer overflow. */
     while (*sizeRecvd < size) {
-        *ptr++ = in_stream[in_stream_pos+*sizeRecvd];
+    	if (in_stream_pos+*sizeRecvd > sizeof(in_stream)-1) {
+    		*ptr++ = in_stream[sizeof(in_stream)-1];
+    	} else {
+    		*ptr++ = in_stream[in_stream_pos+*sizeRecvd];
+    	}
         (*sizeRecvd)++;
     }
+    /* Maintain the position in receive buffer */
     in_stream_pos += *sizeRecvd;
 
     return RTIOSTREAM_NO_ERROR;
@@ -56,15 +74,25 @@ int rtIOStreamSend(
     uint8_t *ptr = (uint8_t *)src;
 
     *sizeSent=0U;
-    
+
+    /* We are here */
     was_sending = 1;
+    /* Reset the position in receive buffer */
     in_stream_pos = 0;
     in_flag = 0;
 
+    /* Send the "size" number of bytes as requested by PIL protocol.
+     * Additionally, if we are outside the buffer, keep writing the
+     * last element. This should model buffer overflow. */
     while (*sizeSent < size) {
-        out_stream[out_stream_pos+*sizeSent] = *ptr++;
+        if (out_stream_pos+*sizeSent > sizeof(out_stream)-1) {
+        	out_stream[sizeof(out_stream)-1] = *ptr++;
+        } else {
+        	out_stream[out_stream_pos+*sizeSent] = *ptr++;
+        }
         (*sizeSent)++;
     }
+    /* Maintain the position in send buffer */
     out_stream_pos += *sizeSent;
 
     return RTIOSTREAM_NO_ERROR;
