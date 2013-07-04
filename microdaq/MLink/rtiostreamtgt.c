@@ -1,5 +1,11 @@
+//#define DEBUG
+
 #include "rtiostream.h"
 #include <stdint.h>
+
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 static volatile uint8_t in_stream[2054] = {0};
 static volatile uint8_t out_stream[2054] = {0};
@@ -33,6 +39,11 @@ int rtIOStreamRecv(
 {
     uint8_t *ptr = (uint8_t *)dst;
 
+#ifdef DEBUG
+    int i;
+    printf("\n\nReceiving size: %d\n",size);
+#endif
+
     *sizeRecvd=0U;
 
     /* One time set of actions when transitioning from send to receive. */
@@ -61,6 +72,15 @@ int rtIOStreamRecv(
     /* Maintain the position in receive buffer */
     in_stream_pos += *sizeRecvd;
 
+#ifdef DEBUG
+    printf("Rcvd size: %d\n",*sizeRecvd);
+    printf("in_stream_pos is: %d\n",in_stream_pos);
+    printf("Rcvd data: ");
+    for (i = in_stream_pos-*sizeRecvd; i<in_stream_pos; i++) {
+        printf("%0x ",in_stream[i]);
+    }
+#endif
+
     return RTIOSTREAM_NO_ERROR;
 }
 
@@ -72,6 +92,11 @@ int rtIOStreamSend(
         size_t     * sizeSent)
 {
     uint8_t *ptr = (uint8_t *)src;
+
+#ifdef DEBUG
+    int i;
+    printf("\n\nSending size: %d\n",size);
+#endif
 
     *sizeSent=0U;
 
@@ -94,6 +119,15 @@ int rtIOStreamSend(
     }
     /* Maintain the position in send buffer */
     out_stream_pos += *sizeSent;
+
+#ifdef DEBUG
+    printf("Sent size: %d\n",*sizeSent);
+    printf("out_stream_pos is: %d\n",out_stream_pos);
+    printf("Sent data: ");
+    for (i = out_stream_pos-*sizeSent; i<out_stream_pos; i++) {
+        printf("%0x ",out_stream[i]);
+    }
+#endif
 
     return RTIOSTREAM_NO_ERROR;
 }
