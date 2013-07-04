@@ -149,6 +149,7 @@ RTIOSTREAMAPI int rtIOStreamSend(
         size_t     * sizeSent)
 {
     uint8_t *ptr = (uint8_t *)src;
+    uint8_t result = 0;
 
 #ifdef DEBUG
     int i;
@@ -161,6 +162,14 @@ RTIOSTREAMAPI int rtIOStreamSend(
     was_sending = 1;
     /* Reset the position in receive buffer */
     out_stream_pos = 0;
+    /* Reset the out_flag and send it to the target
+     * We really need to do that so the host wouldn't
+     * mistakenly read data again, even if it's not available */
+    out_flag = 0;
+    result = mlink_set_obj(&streamID, "out_flag", &out_flag, sizeof(out_flag));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+    SLEEP_SET_OBJ
 
     /* Send the "size" number of bytes as requested by PIL protocol.
      * Additionally, if we are outside the buffer, keep writing the
