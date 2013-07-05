@@ -106,6 +106,11 @@ int rtIOStreamSend(
     in_stream_pos = 0;
     in_flag = 0;
 
+    /* Check if the data has actually been read completely by host
+     * If it hasn't, we can't send */
+    if (out_flag > 0)
+        return RTIOSTREAM_NO_ERROR;
+
     /* Send the "size" number of bytes as requested by PIL protocol.
      * Additionally, if we are outside the buffer, keep writing the
      * last element. This should model buffer overflow. */

@@ -171,6 +171,14 @@ RTIOSTREAMAPI int rtIOStreamSend(
         return RTIOSTREAM_ERROR;
     SLEEP_SET_OBJ
 
+    /* Check if the data has actually been read completely by target
+     * If it hasn't, we can't send */
+    result = mlink_get_obj(&streamID, "in_flag", &in_flag, sizeof(in_flag));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+    if (in_flag > 0)
+        return RTIOSTREAM_NO_ERROR;
+
     /* Send the "size" number of bytes as requested by PIL protocol.
      * Additionally, if we are outside the buffer, keep writing the
      * last element. This should model buffer overflow. */
