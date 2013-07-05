@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 #define GPIO_BASE               0x01E26000
 
 #define GPIO_PCR                ( *( volatile uint32_t* )( GPIO_BASE + 0x04 ) )
@@ -89,29 +88,29 @@
 /* Sys cfg registers */
 #define SYS_BASE            0x01C14000
 
-#define KICK0R              ( *(volatile unsigned int*)(SYS_BASE + 0x038) )
-#define KICK1R              ( *(volatile unsigned int*)(SYS_BASE + 0x03c) )
+#define KICK0R              ( *(volatile uint32_t*)(SYS_BASE + 0x038) )
+#define KICK1R              ( *(volatile uint32_t*)(SYS_BASE + 0x03c) )
 
-#define PINMUX0             ( *(volatile unsigned int*)(SYS_BASE + 0x120) )
-#define PINMUX1             ( *(volatile unsigned int*)(SYS_BASE + 0x124) )
-#define PINMUX2             ( *(volatile unsigned int*)(SYS_BASE + 0x128) )
-#define PINMUX3             ( *(volatile unsigned int*)(SYS_BASE + 0x12C) )
-#define PINMUX4             ( *(volatile unsigned int*)(SYS_BASE + 0x130) )
-#define PINMUX5             ( *(volatile unsigned int*)(SYS_BASE + 0x134) )
-#define PINMUX6             ( *(volatile unsigned int*)(SYS_BASE + 0x138) )
-#define PINMUX7             ( *(volatile unsigned int*)(SYS_BASE + 0x13C) )
-#define PINMUX8             ( *(volatile unsigned int*)(SYS_BASE + 0x140) )
-#define PINMUX9             ( *(volatile unsigned int*)(SYS_BASE + 0x144) )
-#define PINMUX10            ( *(volatile unsigned int*)(SYS_BASE + 0x148) )
-#define PINMUX11            ( *(volatile unsigned int*)(SYS_BASE + 0x14C) )
-#define PINMUX12            ( *(volatile unsigned int*)(SYS_BASE + 0x150) )
-#define PINMUX13            ( *(volatile unsigned int*)(SYS_BASE + 0x154) )
-#define PINMUX14            ( *(volatile unsigned int*)(SYS_BASE + 0x158) )
-#define PINMUX15            ( *(volatile unsigned int*)(SYS_BASE + 0x15C) )
-#define PINMUX16            ( *(volatile unsigned int*)(SYS_BASE + 0x160) )
-#define PINMUX17            ( *(volatile unsigned int*)(SYS_BASE + 0x164) )
-#define PINMUX18            ( *(volatile unsigned int*)(SYS_BASE + 0x168) )
-#define PINMUX19            ( *(volatile unsigned int*)(SYS_BASE + 0x16C) )
+#define PINMUX0             ( *(volatile uint32_t*)(SYS_BASE + 0x120) )
+#define PINMUX1             ( *(volatile uint32_t*)(SYS_BASE + 0x124) )
+#define PINMUX2             ( *(volatile uint32_t*)(SYS_BASE + 0x128) )
+#define PINMUX3             ( *(volatile uint32_t*)(SYS_BASE + 0x12C) )
+#define PINMUX4             ( *(volatile uint32_t*)(SYS_BASE + 0x130) )
+#define PINMUX5             ( *(volatile uint32_t*)(SYS_BASE + 0x134) )
+#define PINMUX6             ( *(volatile uint32_t*)(SYS_BASE + 0x138) )
+#define PINMUX7             ( *(volatile uint32_t*)(SYS_BASE + 0x13C) )
+#define PINMUX8             ( *(volatile uint32_t*)(SYS_BASE + 0x140) )
+#define PINMUX9             ( *(volatile uint32_t*)(SYS_BASE + 0x144) )
+#define PINMUX10            ( *(volatile uint32_t*)(SYS_BASE + 0x148) )
+#define PINMUX11            ( *(volatile uint32_t*)(SYS_BASE + 0x14C) )
+#define PINMUX12            ( *(volatile uint32_t*)(SYS_BASE + 0x150) )
+#define PINMUX13            ( *(volatile uint32_t*)(SYS_BASE + 0x154) )
+#define PINMUX14            ( *(volatile uint32_t*)(SYS_BASE + 0x158) )
+#define PINMUX15            ( *(volatile uint32_t*)(SYS_BASE + 0x15C) )
+#define PINMUX16            ( *(volatile uint32_t*)(SYS_BASE + 0x160) )
+#define PINMUX17            ( *(volatile uint32_t*)(SYS_BASE + 0x164) )
+#define PINMUX18            ( *(volatile uint32_t*)(SYS_BASE + 0x168) )
+#define PINMUX19            ( *(volatile uint32_t*)(SYS_BASE + 0x16C) )
 /* Offset between MUX registers */
 #define MUX_REG_OFFSET      ( 0x0004 )
 
@@ -598,11 +597,28 @@ typedef enum
     MUX_19              = 0x13
 } MUX_Mux_t;
 
+/******************************** STRUCT *************************************/
+
+
+/******************************** UNIONS *************************************/
+
+
+/**************************** OTHER TYPEDEFS *********************************/
+
+
+/******************************************************************************
+************************EXPORTED OBJECT DECLARATIONS **************************
+******************************************************************************/
+
+
+/******************************************************************************
+*********************** EXPORTED FUNCTIONS PROTOTYPES *************************
+******************************************************************************/
 
 void GPIO_init(void);
 int16_t GPIO_setDir(GPIO_PinNumber_t pinNumber, GPIO_PortDir_t direction);
 int16_t GPIO_getInput(GPIO_PinNumber_t pinNumber);
-uint32_t GPIO_getBank( GPIO_Bank_t bank);
+int16_t GPIO_getOutput(GPIO_PinNumber_t pinNumber);
 int16_t GPIO_setOutput(GPIO_PinNumber_t pinNumber, GPIO_PinStatus_t output);
 int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber);
 int16_t GPIO_setEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType);
@@ -611,7 +627,9 @@ int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType
 void MUX_init(void);
 int16_t MUX_setPinFunc(MUX_Mux_t muxReg, uint8_t pinOffset, MUX_PinFunc_t newFunc);
 
-
+/******************************************************************************
+************** EXPORTED FUNCTION-LIKE-MACROS and INLINE FUNCTIONS *************
+******************************************************************************/
 
 
 

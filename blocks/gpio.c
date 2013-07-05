@@ -1,16 +1,13 @@
-#define GPIO_C
 
-#ifndef MATLAB_MEX_FILE
-#include <stdint.h>
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "gpio.h"
-
+#include <stdint.h>
 
 #define SET         1
 #define RESET       0
 
 static void InitRisingEdgeInt(void);
 static void InitFallingEdgeInt(void);
-
 
 void MUX_init(void)
 {
@@ -1036,18 +1033,27 @@ int16_t GPIO_setOutput(GPIO_PinNumber_t pinNumber, GPIO_PinStatus_t output)
     return 0;
 }
 
-uint32_t GPIO_getBank( GPIO_Bank_t bank)
-{
-	uint32_t* gpio_handle = (uint32_t*) (GPIO_BASE + GPIO_IN_DATA_BASE + (GPIO_BASE_OFFSET * 0));
-	return *gpio_handle;
-}
-
 int16_t GPIO_getInput(GPIO_PinNumber_t pinNumber)
 {
     uint32_t input;
     /* Get the bank address from upper nibble - divide by 2 - no of banks per 32bit register */
     uint32_t bank_id = (pinNumber >> 5);
     uint32_t* gpio_handle = (uint32_t*) (GPIO_BASE + GPIO_IN_DATA_BASE + (GPIO_BASE_OFFSET * bank_id));
+    /* Get the pin */
+    uint32_t pin_id  = (pinNumber & 0x1f);
+
+    input = *gpio_handle;
+    input = ( input >> pin_id ) & 1;
+
+    return (int16_t)input;
+}
+
+int16_t GPIO_getOutput(GPIO_PinNumber_t pinNumber)
+{
+    uint32_t input;
+    /* Get the bank address from upper nibble - divide by 2 - no of banks per 32bit register */
+    uint32_t bank_id = (pinNumber >> 5);
+    uint32_t* gpio_handle = (uint32_t*) (GPIO_BASE + GPIO_OUT_DATA_BASE + (GPIO_BASE_OFFSET * bank_id));
     /* Get the pin */
     uint32_t pin_id  = (pinNumber & 0x1f);
 
@@ -1085,7 +1091,7 @@ int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber)
 
 /*****************************************************************************
 *
-*   FUNCTION NAME:  int16_t MUX_setPinFunc(GPIO_PinNumber_t pinNumber,
+*   FUNCTION NAME:  int16_t MUX_setPinFunc(GPIO_PinNumber_t pinNumber, 
 *                                                    GPIO_PortDir_t direction)
 *
 *   DESCRIPTION:   Setup IO pin function in MUX
@@ -1176,5 +1182,5 @@ int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType
 
     return 0;
 }
-
 #endif
+
