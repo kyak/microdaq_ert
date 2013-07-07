@@ -123,10 +123,11 @@ ifeq ($(EXT_MODE),1)
   EXT_SRC     =
   LINT_EXT_COMMON_SRC =
   LINT_EXT_TCPIP_SRC  =
-  ifeq ($(EXTMODE_TRANSPORT),0) #serial
-    EXT_SRC += ext_svr.c updown.c ext_work.c
-    EXT_SRC += ext_svr_serial_transport.c ext_serial_pkt.c
-    EXT_SRC += rtiostream_serial_interface.c rtiostreamserial.c
+  ifeq ($(EXTMODE_TRANSPORT),0) #mlink
+    EXT_SRC += ext_svr.c updown.c ext_work.c rtiostreamtgt.c
+    EXT_SRC += rtiostream_interface.c
+    #EXT_SRC += ext_svr_serial_transport.c ext_serial_pkt.c
+    #EXT_SRC += rtiostream_serial_interface.c
   endif
   ifeq ($(EXTMODE_TRANSPORT),1) #serial_win32
     err:
@@ -297,10 +298,7 @@ endif
 %$(OBJ_EXT): %.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@ 
 
-%$(OBJ_EXT): $(MATLAB_ROOT)/rtw/c/src/rtiostream/rtiostreamserial/%.c
-	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
-
-%$(OBJ_EXT): $(MATLAB_ROOT)/rtw/c/src/ext_mode/serial/%.c
+%$(OBJ_EXT): $(TargetRoot)/ext_mode/target/%.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
 
 %$(OBJ_EXT): $(TargetRoot)/%.c

@@ -3,7 +3,7 @@ function sl_customization(cm)
 
 cm.registerTargetInfo(@loc_createMDAQConfig);
 %External mode
-%cm.ExtModeTransports.add('microdaq.tlc', 'MicroDAQ MLink', 'ext_mdaq_mlink', 'Level1');
+cm.ExtModeTransports.add('microdaq.tlc', 'MicroDAQ MLink', 'ext_mdaq_mlink', 'Level1');
 
 function config = loc_createMDAQConfig
 
