@@ -7,23 +7,38 @@
 #include <stdio.h>
 #endif
 
-static volatile uint8_t in_stream[2054] = {0};
-static volatile uint8_t out_stream[2054] = {0};
-static volatile uint32_t in_flag = 0;
-static volatile uint32_t out_flag = 0;
-static volatile uint32_t in_stream_pos = 0;
-static volatile uint32_t out_stream_pos = 0;
-static uint8_t was_sending = 0;
+#define BUFSIZE 2055
+/* Send buffer on target */
+static volatile uint8_t  buf_snd[BUFSIZE] = {0};
+/* Receive buffer on target */
+static volatile uint8_t  buf_rcv[BUFSIZE] = {0};
+/* Flag to indicate one of the following:
+ * - Target currently reads from the receive buffer and host must not write there.
+ * - Host currently writes to the receive buffer and target must not read from there. */
+static volatile uint32_t sem_snd          =  0;
+/* Flag to indicate one of the following:
+ * - Host currently reads from the send buffer and target must not write there.
+ * - Target currently writes to the send buffer and host must not read from there. */
+static volatile uint32_t sem_rcv          =  0;
+/* Position in target's receive buffer */
+static volatile uint32_t out_rcv          =  0;
+/* Position in host's send buffer */
+static volatile uint32_t in_rcv           =  0;
+/* Position in target's send buffer */
+static volatile uint32_t in_snd           =  0;
+/* Position in host's receive buffer */
+static volatile uint32_t out_snd          =  0;
 
 /* Initialize rtIOStream */
 int rtIOStreamOpen(int argc, void *argv[])
 {
     /* Initialize flags here just in case */
-    in_flag = 0;
-    out_flag = 0;
-    in_stream_pos = 0;
-    out_stream_pos = 0;
-    was_sending = 0;
+    sem_snd          =  0;
+    sem_rcv          =  0;
+    out_rcv          =  0;
+    in_rcv           =  0;
+    in_snd           =  0;
+    out_snd          =  0;
 
     return RTIOSTREAM_NO_ERROR;
 }
@@ -38,49 +53,66 @@ int rtIOStreamRecv(
         size_t * sizeRecvd) // The number of units of data received and copied into the buffer dst (zero if no data was copied).
 {
     uint8_t *ptr = (uint8_t *)dst;
-
+    uint32_t out_rcv_entry = 0;
 #ifdef DEBUG
     int i;
-    printf("\n\nReceiving size: %d\n",size);
 #endif
-
-    *sizeRecvd=0U;
-
-    /* One time set of actions when transitioning from send to receive. */
-    if (was_sending == 1) {
-        was_sending = 0;
-        /* Reset the position in send buffer */
-        out_stream_pos = 0;
-        /* Since we are reading, it means that writing has finished */
-        out_flag = 1;
-    }
-
-    if (in_flag == 0) /* No data to receive */
-        return RTIOSTREAM_NO_ERROR;
-
-    /* Get the "size" number of bytes as requested by PIL protocol.
-     * Additionally, if we are outside the buffer, keep reading the
-     * last element. This should model buffer overflow. */
-    while (*sizeRecvd < size) {
-    	if (in_stream_pos+*sizeRecvd > sizeof(in_stream)-1) {
-    		*ptr++ = in_stream[sizeof(in_stream)-1];
-    	} else {
-    		*ptr++ = in_stream[in_stream_pos+*sizeRecvd];
-    	}
-        (*sizeRecvd)++;
-    }
-    /* Maintain the position in receive buffer */
-    in_stream_pos += *sizeRecvd;
-
+    *sizeRecvd = 0U;
+    
 #ifdef DEBUG
-    printf("Rcvd size: %d\n",*sizeRecvd);
-    printf("in_stream_pos is: %d\n",in_stream_pos);
-    printf("Rcvd data: ");
-    for (i = in_stream_pos-*sizeRecvd; i<in_stream_pos; i++) {
-        printf("%0x ",in_stream[i]);
-    }
+    printf("Commanded to receive %d bytes from host...\n",size);
 #endif
-
+#ifdef DEBUG
+    printf("Checking if host is sending right now...\n");
+#endif
+    /* Check if host is sending right now */
+    if (sem_rcv > 0) {
+#ifdef DEBUG
+        printf("Host is sending right now, sem_rcv is %d\n",sem_rcv);
+#endif
+        /* Return immediately if host is sending */
+        return RTIOSTREAM_NO_ERROR;
+    } else {
+#ifdef DEBUG
+        printf("Host is NOT sending, sem_rcv is %d\n",sem_rcv);
+#endif
+        /* Target starts reading, set semaphore */
+        sem_rcv = 1;
+#ifdef DEBUG
+        printf("Setting sem_rcv to %d\n",sem_rcv);
+#endif
+#ifdef DEBUG
+        printf("The actual in/out positions in target's receive buffer: %d/%d\n",in_rcv,out_rcv);
+#endif
+        /* Read the requested 'size' number of bytes from buffer */
+        out_rcv_entry = out_rcv;
+        while (*sizeRecvd < size) {
+            if (in_rcv == out_rcv) {
+#ifdef DEBUG
+                printf("Buffer Empty - nothing to get.\n");
+#endif
+                /* Buffer Empty - nothing to get */
+                break;
+            }
+            *ptr++ = buf_rcv[out_rcv_entry + *sizeRecvd];
+            (*sizeRecvd)++;
+            out_rcv = (out_rcv + 1) % BUFSIZE;
+        }
+    }
+#ifdef DEBUG
+    printf("Received size: %d\n",*sizeRecvd);
+    printf("in/out positions in target's receive buffer after receive: %d/%d\n",in_rcv,out_rcv);
+#endif
+    /* Target finished reading, unset semaphore */
+    sem_rcv = 0;
+#ifdef DEBUG
+    printf("Setting sem_rcv to %d\n",sem_rcv);
+    printf("Rcvd data: ");
+    for (i = out_rcv_entry-*sizeRecvd; i<out_rcv_entry; i++) {
+        printf("%0x ",buf_rcv[i]);
+    }
+    printf("\n\n");
+#endif
     return RTIOSTREAM_NO_ERROR;
 }
 
@@ -92,48 +124,66 @@ int rtIOStreamSend(
         size_t     * sizeSent)
 {
     uint8_t *ptr = (uint8_t *)src;
-
+    uint32_t in_snd_entry = in_snd;
 #ifdef DEBUG
     int i;
-    printf("\n\nSending size: %d\n",size);
 #endif
-
-    *sizeSent=0U;
-
-    /* We are here */
-    was_sending = 1;
-    /* Reset the position in receive buffer */
-    in_stream_pos = 0;
-    in_flag = 0;
-
-    /* Check if the data has actually been read completely by host
-     * If it hasn't, we can't send */
-    if (out_flag > 0)
+    *sizeSent = 0U;
+    
+#ifdef DEBUG
+    printf("Commanded to send %d bytes to host...\n",size);
+#endif
+#ifdef DEBUG
+    printf("Checking if host is reading right now...\n");
+#endif
+    /* Check if host is reading right now */
+    if (sem_snd > 0) {
+#ifdef DEBUG
+        printf("Host is reading right now, sem_snd is %d\n",sem_snd);
+#endif
+        /* Return immediately if host is reading */
         return RTIOSTREAM_NO_ERROR;
-
-    /* Send the "size" number of bytes as requested by PIL protocol.
-     * Additionally, if we are outside the buffer, keep writing the
-     * last element. This should model buffer overflow. */
-    while (*sizeSent < size) {
-        if (out_stream_pos+*sizeSent > sizeof(out_stream)-1) {
-        	out_stream[sizeof(out_stream)-1] = *ptr++;
-        } else {
-        	out_stream[out_stream_pos+*sizeSent] = *ptr++;
+    } else {
+#ifdef DEBUG
+        printf("Host is NOT reading, sem_snd is %d\n",sem_snd);
+#endif
+        /* Target starts sending, set semaphore */
+        sem_snd = 1;
+#ifdef DEBUG
+        printf("Setting sem_snd to %d\n",sem_snd);
+#endif
+#ifdef DEBUG
+        printf("The actual in/out positions in target's send buffer: %d/%d\n",in_snd,out_snd);
+#endif
+        /* Send the requested 'size' number of bytes to buffer */
+        in_snd_entry = in_snd;
+        while (*sizeSent < size) {
+            if (in_snd == (( out_snd - 1 + BUFSIZE) % BUFSIZE)) {
+#ifdef DEBUG
+                printf("Buffer Full - can't write.\n");
+#endif
+                /* Buffer Full - can't write */
+                break;
+            }
+            buf_snd[in_snd_entry + *sizeSent] = *ptr++;
+            (*sizeSent)++;
+            in_snd = (in_snd + 1) % BUFSIZE;
         }
-        (*sizeSent)++;
     }
-    /* Maintain the position in send buffer */
-    out_stream_pos += *sizeSent;
-
 #ifdef DEBUG
     printf("Sent size: %d\n",*sizeSent);
-    printf("out_stream_pos is: %d\n",out_stream_pos);
-    printf("Sent data: ");
-    for (i = out_stream_pos-*sizeSent; i<out_stream_pos; i++) {
-        printf("%0x ",out_stream[i]);
-    }
+    printf("in/out positions in target's send buffer after send: %d/%d\n",in_snd,out_snd);
 #endif
-
+    /* Target finished sending, unset semaphore */
+    sem_snd = 0;
+#ifdef DEBUG
+    printf("Setting sem_snd to %d\n",sem_snd);
+    printf("Sent data: ");
+    for (i = in_snd_entry-*sizeSent; i<in_snd_entry; i++) {
+        printf("%0x ",buf_snd[i]);
+    }
+    printf("\n\n");
+#endif
     return RTIOSTREAM_NO_ERROR;
 }
 

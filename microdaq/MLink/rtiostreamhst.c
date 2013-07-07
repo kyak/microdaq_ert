@@ -20,13 +20,27 @@
 #define SLEEP_SET_OBJ usleep(7000);
 #endif
 
-static volatile uint8_t in_stream[2054] = {0};
-static volatile uint8_t out_stream[2054] = {0};
-static uint32_t in_flag = 0;
-static uint32_t out_flag = 0;
-static volatile uint32_t in_stream_pos = 0;
-static volatile uint32_t out_stream_pos = 0;
-static uint8_t was_sending = 0;
+#define BUFSIZE 2055
+/* Send buffer on target */
+static volatile uint8_t  buf_snd[BUFSIZE] = {0};
+/* Receive buffer on target */
+static volatile uint8_t  buf_rcv[BUFSIZE] = {0};
+/* Flag to indicate one of the following:
+ * - Target currently reads from the receive buffer and host must not write there.
+ * - Host currently writes to the receive buffer and target must not read from there. */
+static uint32_t sem_snd          =  0;
+/* Flag to indicate one of the following:
+ * - Host currently reads from the send buffer and target must not write there.
+ * - Target currently writes to the send buffer and host must not read from there. */
+static uint32_t sem_rcv          =  0;
+/* Position in target's receive buffer */
+static uint32_t out_rcv          =  0;
+/* Position in host's send buffer */
+static uint32_t in_rcv           =  0;
+/* Position in target's send buffer */
+static uint32_t in_snd           =  0;
+/* Position in host's receive buffer */
+static uint32_t out_snd          =  0;
 
 /* Initialize rtIOStream */
 RTIOSTREAMAPI int rtIOStreamOpen(int argc, void *argv[])
@@ -34,11 +48,12 @@ RTIOSTREAMAPI int rtIOStreamOpen(int argc, void *argv[])
     int result, streamID, count = 0;
     char * ipaddr = "10.10.1.1";
     /* Initialize flags to avoid weird behaviour when this library is reused */
-    in_flag = 0;
-    out_flag = 0;
-    in_stream_pos = 0;
-    out_stream_pos = 0;
-    was_sending = 0;
+    sem_snd          =  0;
+    sem_rcv          =  0;
+    out_rcv          =  0;
+    in_rcv           =  0;
+    in_snd           =  0;
+    out_snd          =  0;
 
     /* Parse arguments */
     while(count < argc) {
@@ -72,72 +87,94 @@ RTIOSTREAMAPI int rtIOStreamRecv(
 {
     uint8_t *ptr = (uint8_t *)dst;
     uint8_t result = 0;
-
+    uint32_t out_snd_entry = 0;
 #ifdef DEBUG
     int i;
-    printf("\n\nReceiving size: %d\n",size);
 #endif
-
-    *sizeRecvd=0U;
-
-    /* One time set of actions when transitioning from send to receive.
-     * These steps are done in order to actually send the buffer to target */
-    if (was_sending == 1) {
-        /* Since we are reading, it means that writing has finished */
-        in_flag = 1;
-        was_sending = 0;
-        /* Send the buffer to the target. in_stream is assumed to be uint8s */
-        result = mlink_set_obj(&streamID, "in_stream", &in_stream, in_stream_pos);
-        if (result < 0)
-            return RTIOSTREAM_ERROR;
-        SLEEP_SET_OBJ
-        /* Reset the position in send buffer */
-        in_stream_pos = 0;
-        /* Send the flag for the target indicating that there is something in input buffer */
-        result = mlink_set_obj(&streamID, "in_flag", &in_flag, sizeof(in_flag));
-        if (result < 0)
-            return RTIOSTREAM_ERROR;
-        SLEEP_SET_OBJ
-    }
-
-    /* Check if there is data in target's send buffer */
-    result = mlink_get_obj(&streamID, "out_flag", &out_flag, sizeof(out_flag));
-    if (result < 0)
-        return RTIOSTREAM_ERROR;
-
-    if (out_flag == 0) /* No data to receive */
-        return RTIOSTREAM_NO_ERROR;
-
-    /* Get the data from target.
-     * TODO: possible to optimize: get only bytes from out_stream_pos to 
-     * out_stream_pos+size */
-    result = mlink_get_obj(&streamID, "out_stream", &out_stream, out_stream_pos+size);
-    if (result < 0)
-        return RTIOSTREAM_ERROR;
-
-    /* Get the "size" number of bytes as requested by PIL protocol.
-     * Additionally, if we are outside the buffer, keep reading the
-     * last element. This should model buffer overflow. */
-    while (*sizeRecvd < size) {
-        if (out_stream_pos+*sizeRecvd > sizeof(out_stream)-1) {
-            *ptr++ = out_stream[sizeof(out_stream)-1];
-        } else {
-            *ptr++ = out_stream[out_stream_pos+*sizeRecvd];
-        }
-        (*sizeRecvd)++;
-    }
-    /* Maintain the position in receive buffer */
-    out_stream_pos += *sizeRecvd;
-
+    *sizeRecvd = 0U;
+    
 #ifdef DEBUG
-    printf("Rcvd size: %d\n",*sizeRecvd);
-    printf("out_stream_pos is: %d\n",out_stream_pos);
-    printf("Rcvd data: ");
-    for (i = out_stream_pos-*sizeRecvd; i<out_stream_pos; i++) {
-        printf("%0x ",out_stream[i]);
-    }
+    printf("Commanded to receive %d bytes from target...\n",size);
 #endif
-
+    
+    /* Check if target is sending right now */
+    result = mlink_get_obj(&streamID, "sem_snd", &sem_snd, sizeof(sem_snd));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+#ifdef DEBUG
+    printf("Checking if target is sending right now...\n");
+#endif
+    if (sem_snd > 0) {
+#ifdef DEBUG
+        printf("Target is sending right now, sem_snd is %d\n",sem_snd);
+#endif
+        /* Return immediately if target is sending */
+        return RTIOSTREAM_NO_ERROR;
+    } else {
+#ifdef DEBUG
+        printf("Target is NOT sending, sem_snd is %d\n",sem_snd);
+#endif
+        /* Host starts reading, set semaphore */
+        sem_snd = 1;
+        result = mlink_set_obj(&streamID, "sem_snd", &sem_snd, sizeof(sem_snd));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+        SLEEP_SET_OBJ
+#ifdef DEBUG
+        printf("Setting sem_snd to %d\n",sem_snd);
+#endif
+        /* Read the actual in/out positions in target's send buffer */
+        result = mlink_get_obj(&streamID, "in_snd", &in_snd, sizeof(in_snd));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+        result = mlink_get_obj(&streamID, "out_snd", &out_snd, sizeof(out_snd));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+#ifdef DEBUG
+        printf("The actual in/out positions in target's send buffer: %d/%d\n",in_snd,out_snd);
+#endif
+        /* Get the data from target */
+        result = mlink_get_obj(&streamID, "buf_snd", &buf_snd, sizeof(buf_snd));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+        /* Read the requested 'size' number of bytes from buffer */
+        out_snd_entry = out_snd;
+        while (*sizeRecvd < size) {
+            if (in_snd == out_snd) {
+#ifdef DEBUG
+                printf("Buffer Empty - nothing to get.\n");
+#endif
+                /* Buffer Empty - nothing to get */
+                break;
+            }
+            *ptr++ = buf_snd[out_snd_entry + *sizeRecvd];
+            (*sizeRecvd)++;
+            out_snd = (out_snd + 1) % BUFSIZE;
+        }
+    }
+#ifdef DEBUG
+    printf("Received size: %d\n",*sizeRecvd);
+    printf("in/out positions in target's send buffer after receive: %d/%d\n",in_snd,out_snd);
+#endif
+    /* Update out position in target's send buffer */
+    result = mlink_set_obj(&streamID, "out_snd", &out_snd, sizeof(out_snd));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+    SLEEP_SET_OBJ
+    /* Host finished reading, unset semaphore */
+    sem_snd = 0;
+    result = mlink_set_obj(&streamID, "sem_snd", &sem_snd, sizeof(sem_snd));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+    SLEEP_SET_OBJ
+#ifdef DEBUG
+    printf("Setting sem_snd to %d\n",sem_snd);
+    printf("Rcvd data: ");
+    for (i = out_snd_entry-*sizeRecvd; i<out_snd_entry; i++) {
+        printf("%0x ",buf_snd[i]);
+    }
+    printf("\n\n");
+#endif
     return RTIOSTREAM_NO_ERROR;
 }
 
@@ -150,58 +187,95 @@ RTIOSTREAMAPI int rtIOStreamSend(
 {
     uint8_t *ptr = (uint8_t *)src;
     uint8_t result = 0;
-
+    uint32_t in_rcv_entry = 0;
 #ifdef DEBUG
     int i;
-    printf("\n\nSending size: %d\n",size);
 #endif
-
-    *sizeSent=0U;
-
-    /* We are here */
-    was_sending = 1;
-    /* Reset the position in receive buffer */
-    out_stream_pos = 0;
-    /* Reset the out_flag and send it to the target
-     * We really need to do that so the host wouldn't
-     * mistakenly read data again, even if it's not available */
-    out_flag = 0;
-    result = mlink_set_obj(&streamID, "out_flag", &out_flag, sizeof(out_flag));
+    *sizeSent = 0U;
+    
+#ifdef DEBUG
+    printf("Commanded to send %d bytes to target...\n",size);
+#endif
+    
+    /* Check if target is reading right now */
+    result = mlink_get_obj(&streamID, "sem_rcv", &sem_rcv, sizeof(sem_rcv));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+#ifdef DEBUG
+    printf("Checking if target is reading right now...\n");
+#endif
+    if (sem_rcv > 0) {
+#ifdef DEBUG
+        printf("Target is reading right now, sem_rcv is %d\n",sem_rcv);
+#endif
+        /* Return immediately if target is reading */
+        return RTIOSTREAM_NO_ERROR;
+    } else {
+#ifdef DEBUG
+        printf("Target is NOT reading, sem_rcv is %d\n",sem_rcv);
+#endif
+        /* Host starts sending, set semaphore */
+        sem_rcv = 1;
+        result = mlink_set_obj(&streamID, "sem_rcv", &sem_rcv, sizeof(sem_rcv));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+        SLEEP_SET_OBJ
+#ifdef DEBUG
+        printf("Setting sem_rcv to %d\n",sem_rcv);
+#endif
+        /* Read the actual in/out positions in target's receive buffer */
+        result = mlink_get_obj(&streamID, "in_rcv", &in_rcv, sizeof(in_rcv));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+        result = mlink_get_obj(&streamID, "out_rcv", &out_rcv, sizeof(out_rcv));
+        if (result < 0)
+            return RTIOSTREAM_ERROR;
+#ifdef DEBUG
+        printf("The actual in/out positions in target's receive buffer: %d/%d\n",in_rcv,out_rcv);
+#endif
+        /* Send the requested 'size' number of bytes to buffer */
+        in_rcv_entry = in_rcv;
+        while (*sizeSent < size) {
+            if (in_rcv == (( out_rcv - 1 + BUFSIZE) % BUFSIZE)) {
+#ifdef DEBUG
+                printf("Buffer Full - can't write.\n");
+#endif
+                /* Buffer Full - can't write */
+                break;
+            }
+            buf_rcv[in_rcv_entry + *sizeSent] = *ptr++;
+            (*sizeSent)++;
+            in_rcv = (in_rcv + 1) % BUFSIZE;
+        }
+    }
+#ifdef DEBUG
+    printf("Sent size: %d\n",*sizeSent);
+    printf("in/out positions in target's receive buffer after send: %d/%d\n",in_rcv,out_rcv);
+#endif
+    /* Send the buffer to the target */
+    result = mlink_set_obj(&streamID, "buf_rcv", &buf_rcv, sizeof(buf_rcv));
     if (result < 0)
         return RTIOSTREAM_ERROR;
     SLEEP_SET_OBJ
-
-    /* Check if the data has actually been read completely by target
-     * If it hasn't, we can't send */
-    result = mlink_get_obj(&streamID, "in_flag", &in_flag, sizeof(in_flag));
+    /* Update in position in target's receive buffer */
+    result = mlink_set_obj(&streamID, "in_rcv", &in_rcv, sizeof(in_rcv));
     if (result < 0)
         return RTIOSTREAM_ERROR;
-    if (in_flag > 0)
-        return RTIOSTREAM_NO_ERROR;
-
-    /* Send the "size" number of bytes as requested by PIL protocol.
-     * Additionally, if we are outside the buffer, keep writing the
-     * last element. This should model buffer overflow. */
-    while (*sizeSent < size) {
-        if (in_stream_pos+*sizeSent > sizeof(in_stream)-1) {
-            in_stream[sizeof(in_stream)-1] = *ptr++;
-        } else {
-            in_stream[in_stream_pos+*sizeSent] = *ptr++;
-        }
-        (*sizeSent)++;
-    }
-    /* Maintain the position in send buffer */
-    in_stream_pos += *sizeSent;
-
+    SLEEP_SET_OBJ
+    /* Host finished sending, unset semaphore */
+    sem_rcv = 0;
+    result = mlink_set_obj(&streamID, "sem_rcv", &sem_rcv, sizeof(sem_rcv));
+    if (result < 0)
+        return RTIOSTREAM_ERROR;
+    SLEEP_SET_OBJ
 #ifdef DEBUG
-    printf("Sent size: %d\n",*sizeSent);
-    printf("in_stream_pos is: %d\n",in_stream_pos);
+    printf("Setting sem_rcv to %d\n",sem_rcv);
     printf("Sent data: ");
-    for (i = in_stream_pos-*sizeSent; i<in_stream_pos; i++) {
-        printf("%0x ",in_stream[i]);
+    for (i = in_rcv_entry-*sizeSent; i<in_rcv_entry; i++) {
+        printf("%0x ",buf_rcv[i]);
     }
+    printf("\n\n");
 #endif
-
     return RTIOSTREAM_NO_ERROR;
 }
 
