@@ -87,7 +87,6 @@ RTIOSTREAMAPI int rtIOStreamRecv(
 {
     uint8_t *ptr = (uint8_t *)dst;
     uint8_t result = 0;
-    uint32_t out_snd_entry = 0;
 #ifdef DEBUG
     int i;
 #endif
@@ -138,7 +137,6 @@ RTIOSTREAMAPI int rtIOStreamRecv(
         if (result < 0)
             return RTIOSTREAM_ERROR;
         /* Read the requested 'size' number of bytes from buffer */
-        out_snd_entry = out_snd;
         while (*sizeRecvd < size) {
             if (in_snd == out_snd) {
 #ifdef DEBUG
@@ -147,7 +145,7 @@ RTIOSTREAMAPI int rtIOStreamRecv(
                 /* Buffer Empty - nothing to get */
                 break;
             }
-            *ptr++ = buf_snd[out_snd_entry + *sizeRecvd];
+            *ptr++ = buf_snd[out_snd];
             (*sizeRecvd)++;
             out_snd = (out_snd + 1) % BUFSIZE;
         }
@@ -187,7 +185,6 @@ RTIOSTREAMAPI int rtIOStreamSend(
 {
     uint8_t *ptr = (uint8_t *)src;
     uint8_t result = 0;
-    uint32_t in_rcv_entry = 0;
 #ifdef DEBUG
     int i;
 #endif
@@ -234,7 +231,6 @@ RTIOSTREAMAPI int rtIOStreamSend(
         printf("The actual in/out positions in target's receive buffer: %d/%d\n",in_rcv,out_rcv);
 #endif
         /* Send the requested 'size' number of bytes to buffer */
-        in_rcv_entry = in_rcv;
         while (*sizeSent < size) {
             if (in_rcv == (( out_rcv - 1 + BUFSIZE) % BUFSIZE)) {
 #ifdef DEBUG
@@ -243,7 +239,7 @@ RTIOSTREAMAPI int rtIOStreamSend(
                 /* Buffer Full - can't write */
                 break;
             }
-            buf_rcv[in_rcv_entry + *sizeSent] = *ptr++;
+            buf_rcv[in_rcv] = *ptr++;
             (*sizeSent)++;
             in_rcv = (in_rcv + 1) % BUFSIZE;
         }

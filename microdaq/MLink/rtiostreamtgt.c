@@ -53,7 +53,6 @@ int rtIOStreamRecv(
         size_t * sizeRecvd) // The number of units of data received and copied into the buffer dst (zero if no data was copied).
 {
     uint8_t *ptr = (uint8_t *)dst;
-    uint32_t out_rcv_entry = 0;
 #ifdef DEBUG
     int i;
 #endif
@@ -85,7 +84,6 @@ int rtIOStreamRecv(
         printf("The actual in/out positions in target's receive buffer: %d/%d\n",in_rcv,out_rcv);
 #endif
         /* Read the requested 'size' number of bytes from buffer */
-        out_rcv_entry = out_rcv;
         while (*sizeRecvd < size) {
             if (in_rcv == out_rcv) {
 #ifdef DEBUG
@@ -94,7 +92,7 @@ int rtIOStreamRecv(
                 /* Buffer Empty - nothing to get */
                 break;
             }
-            *ptr++ = buf_rcv[out_rcv_entry + *sizeRecvd];
+            *ptr++ = buf_rcv[out_rcv];
             (*sizeRecvd)++;
             out_rcv = (out_rcv + 1) % BUFSIZE;
         }
@@ -124,7 +122,6 @@ int rtIOStreamSend(
         size_t     * sizeSent)
 {
     uint8_t *ptr = (uint8_t *)src;
-    uint32_t in_snd_entry = in_snd;
 #ifdef DEBUG
     int i;
 #endif
@@ -156,7 +153,6 @@ int rtIOStreamSend(
         printf("The actual in/out positions in target's send buffer: %d/%d\n",in_snd,out_snd);
 #endif
         /* Send the requested 'size' number of bytes to buffer */
-        in_snd_entry = in_snd;
         while (*sizeSent < size) {
             if (in_snd == (( out_snd - 1 + BUFSIZE) % BUFSIZE)) {
 #ifdef DEBUG
@@ -165,7 +161,7 @@ int rtIOStreamSend(
                 /* Buffer Full - can't write */
                 break;
             }
-            buf_snd[in_snd_entry + *sizeSent] = *ptr++;
+            buf_snd[in_snd] = *ptr++;
             (*sizeSent)++;
             in_snd = (in_snd + 1) % BUFSIZE;
         }
