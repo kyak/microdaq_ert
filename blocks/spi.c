@@ -1,4 +1,4 @@
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT) 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -110,8 +110,6 @@ int spi_xfer(uint8_t bitlen, const void *dout,
 	volatile const uint16_t	*txp = dout;
 	volatile uint16_t		*rxp = din;
 
-
-
 	len = bitlen / 16;
 
 	/* do an empty read to clear the current contents */
@@ -153,11 +151,13 @@ int spi_xfer(uint8_t bitlen, const void *dout,
 
 	return 0;
 
+/* TODO: */
+#if 0
 out:
 	if (flags & SPI_XFER_END) {
 		SPI_SPIDAT1 = data1_reg_val & ~(1 << 28);
 	}
+#endif
 
-	return 0;
 }
 #endif

@@ -1,4 +1,3 @@
-
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include <stdint.h>
 
@@ -25,7 +24,7 @@
 
 #define ANALOG_EN					GP5_11
 
-#define LTC185X_SPI_FREQ			(20000000)
+#define LTC185X_SPI_FREQ			(15000000)
 #define LTC185X_SPI_POLARITY		(0)
 #define LTC185X_SPI_PHRASE			(0)
 
@@ -72,7 +71,7 @@ static inline void ltc185x_start_conv( void )
     while(!GPIO_getInput( LTC185X_BUSY ));
 } 
 
-static int ltc185x_read(uint8_t cmd, uint16_t *data)
+static int ltc185x_xfer(uint8_t cmd, uint16_t *data)
 {
     int ret = -1;
     volatile uint16_t tmp_cmd = 0;
@@ -80,7 +79,8 @@ static int ltc185x_read(uint8_t cmd, uint16_t *data)
     tmp_cmd |= ( cmd << 8);
 
     ret = spi_xfer( 16, (void*)&tmp_cmd, data, SPI_XFER_END);
-    if (ret){
+    if (ret)
+    {
        return -1;
     }
 
@@ -118,14 +118,12 @@ int ltc185x_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
     /* prepare command for converter */ 
     cmd = ltc185x_create_cmd(ch, range, mode, polarity);
 
-    /* TODO: */
-    ltc185x_start_conv();
-    ltc185x_read(cmd, data);
+    ltc185x_xfer(cmd, 0);
 
      /* trigger conversion start and wait for busy line */
     ltc185x_start_conv();
 
     /* read data from converter */
-    return ltc185x_read(cmd, data);
+    return ltc185x_xfer(cmd, data);
 }
 #endif

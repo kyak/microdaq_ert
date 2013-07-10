@@ -1,5 +1,5 @@
 
-#ifndef MATLAB_MEX_FILE
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include <stdio.h>
 #include <string.h>
 
