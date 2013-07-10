@@ -31,8 +31,19 @@ MDAQDAC.TerminateFcnSpec = 'DACTerminate(uint8 p1, uint16 p2)';
 MDAQDAC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQDAC.Options.supportsMultipleExecInstances = true;
+%% QEP
+% Populate legacy_code structure with information
+MDAQQEP = legacy_code('initialize');
+MDAQQEP.SFunctionName = 'sfun_MDAQQEP';
+MDAQQEP.HeaderFiles = {'mdaqenc.h'};
+MDAQQEP.SourceFiles = {'mdaqenc.c','eqep.c','utils.c'};
+MDAQQEP.StartFcnSpec = 'ENCInit(uint8 p1)';
+MDAQQEP.OutputFcnSpec = 'ENCStep(uint8 p1, int32 y1[1])';
+MDAQQEP.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQQEP.Options.supportsMultipleExecInstances = true;
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
