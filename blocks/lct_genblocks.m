@@ -1,3 +1,4 @@
+function lct_genblocks
 %% LED
 % Populate legacy_code structure with information
 MDAQLED = legacy_code('initialize');
@@ -12,7 +13,7 @@ MDAQLED.Options.supportsMultipleExecInstances = true;
 MDAQADC = legacy_code('initialize');
 MDAQADC.SFunctionName = 'sfun_MDAQADC';
 MDAQADC.HeaderFiles = {'mdaqadc.h'};
-MDAQADC.SourceFiles = {'adc.c','mdaq-ain.c','ltc185x.c','spi.c','gpio.c','utils.c'};
+MDAQADC.SourceFiles = {'mdaqadc.c','mdaq-ain.c','ltc185x.c','spi.c','gpio.c','utils.c'};
 MDAQADC.StartFcnSpec = 'ADCInit(uint8 p1, uint8 p2, uint8 p3, uint8 p4)';
 MDAQADC.OutputFcnSpec = 'ADCStep(uint8 p1, uint16 y1[1], single y2[1])';
 MDAQADC.SampleTime = 'parameterized';

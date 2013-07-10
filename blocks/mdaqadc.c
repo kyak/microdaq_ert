@@ -1,9 +1,8 @@
-
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "mdaq-ain.h"
 
 static mdaq_ain_t ch_config[MDAQ_AIN_MAX];
-#endif
+#endif 
 
 void ADCInit(unsigned char Channel, unsigned char Polarity,
 			 unsigned char Range, unsigned char Mode)

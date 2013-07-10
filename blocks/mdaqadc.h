@@ -1,5 +1,5 @@
-#ifndef __ADC_H
-#define __ADC_H
+#ifndef _MDAQADC_H_
+#define _MDAQADC_H_
 
 void ADCInit(unsigned char Channel, unsigned char Polarity,
 			 unsigned char Range, unsigned char Mode);
