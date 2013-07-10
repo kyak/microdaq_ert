@@ -19,8 +19,20 @@ MDAQADC.OutputFcnSpec = 'ADCStep(uint8 p1, uint16 y1[1], single y2[1])';
 MDAQADC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQADC.Options.supportsMultipleExecInstances = true;
+%% DAC
+% Populate legacy_code structure with information
+MDAQDAC = legacy_code('initialize');
+MDAQDAC.SFunctionName = 'sfun_MDAQDAC';
+MDAQDAC.HeaderFiles = {'mdaqdac.h'};
+MDAQDAC.SourceFiles = {'mdaqdac.c','mdaq-aout.c','dac7568.c','spi.c','gpio.c','utils.c'};
+MDAQDAC.StartFcnSpec = 'DACInit()';
+MDAQDAC.OutputFcnSpec = 'DACStep(uint8 p1, uint16 u1)';
+MDAQDAC.TerminateFcnSpec = 'DACTerminate(uint8 p1, uint16 p2)';
+MDAQDAC.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQDAC.Options.supportsMultipleExecInstances = true;
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
