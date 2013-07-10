@@ -35,7 +35,7 @@ inline uint16_t raw_read16(uint32_t addr)
 	return *(uint16_t *)(addr);
 }
 
-inline uint32_t raw_read32(uint32_t addr)
+uint32_t raw_read32(uint32_t addr)
 {
 	return *(uint32_t *)(addr);
 }
@@ -47,12 +47,12 @@ inline void raw_write8(uint8_t data, uint32_t addr)
 	*(uint8_t *)(addr) = data;
 }
 
-inline void raw_write16(uint16_t data, uint32_t addr)
+void raw_write16(uint16_t data, uint32_t addr)
 {
 	*(uint16_t *)(addr) = data;
 }
 
-inline void raw_write32(uint32_t data, uint32_t addr)
+void raw_write32(uint32_t data, uint32_t addr)
 {
 	*(uint32_t *)(addr) = data;
 }
