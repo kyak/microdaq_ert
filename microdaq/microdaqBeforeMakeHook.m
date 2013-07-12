@@ -22,8 +22,15 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     fwrite(fid, sprintf('BIOSRoot      = %s\n', BIOSRoot));
     fclose(fid);
 
+    if (strcmp(get_param(modelName,'ExtMode'),'on'))
+        % The SYS/BIOS config file for External Mode is a bit different
+        % (supports tasks and semaphores).
+        configFile = 'clock_extmode.cfg';
+    else
+        configFile = 'clock.cfg';
+    end
     % Run XDC Tools on SYS/BIOS configuration file
-    copyfile([TargetRoot,'/clock.cfg']);
+    copyfile(fullfile(TargetRoot,configFile));
     Ts = str2double(get_param(modelName,'FixedStep'));
     % Clock.tickPeriod is in microseconds
     if isnan(Ts)
@@ -32,12 +39,12 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     else
         Ts = Ts*1e6;
     end
-    fd = fopen('clock.cfg','a');
+    fd = fopen(configFile,'a');
     fprintf(fd,'Clock.tickPeriod = %s;',num2str(Ts));
     fclose(fd);
     syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
         'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
-        CompilerRoot,'" --compileOptions "-g --optimize_with_debug" clock.cfg'];
+        CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ',configFile];
     system(syscmd);
 end
  

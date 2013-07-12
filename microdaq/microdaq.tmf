@@ -82,6 +82,7 @@ MATLAB_INCLUDES = \
 	-I$(MATLAB_ROOT)/extern/include \
 	-I$(MATLAB_ROOT)/simulink/include \
 	-I$(MATLAB_ROOT)/rtw/c/src \
+	-I$(TargetRoot)/ext_mode/target \
 	-I$(MATLAB_ROOT)/rtw/c/src/ext_mode/common
 
 # Additional includes 
@@ -118,13 +119,15 @@ LDFLAGS_PIL = $(subst configPkg,../configPkg,$(LDFLAGS))
 #   <matlabroot>/toolbox/simulink/simulink/extmode_transports.m
 ifeq ($(EXT_MODE),1)
   EXT_CC_OPTS = -DEXT_MODE -D$(COMPUTER) -DMODEL=$(MODEL) -DNUMST=$(NUMST) -DONESTEPFCN=$(ONESTEPFCN) #-DVERBOSE
-  EXT_CC_OPTS += -DTERMFCN=$(TERMFCN) -DMAT_FILE=$(MAT_FILE)
+  EXT_CC_OPTS += -DTERMFCN=$(TERMFCN) -DMAT_FILE=$(MAT_FILE) -DC6000_EXT_MODE
+  #To support legacy DSP/BIOS functions for C6000 target in external mode
+  #EXT_CC_OPTS += --include_path="$(BIOSRoot)/packages/ti/bios/include"
   EXT_LIB     =
   EXT_SRC     =
   LINT_EXT_COMMON_SRC =
   LINT_EXT_TCPIP_SRC  =
   ifeq ($(EXTMODE_TRANSPORT),0) #mlink
-    EXT_SRC += ext_svr.c updown.c ext_work.c rtiostreamtgt.c
+    EXT_SRC += ext_svr_c6000.c updown_c6000.c ext_work_c6000.c rtiostreamtgt.c
     EXT_SRC += rtiostream_interface.c
     #EXT_SRC += ext_svr_serial_transport.c ext_serial_pkt.c
     #EXT_SRC += rtiostream_serial_interface.c
@@ -282,7 +285,7 @@ endif
 ifeq ($(BUILD_MODE), real_time)
 $(MODEL)$(PROGRAM_FILE_EXT): $(OBJS) $(MODELREF_LINK_LIBS) $(SHARED_LIB) $(LIBS)
 	@echo "### BUILD_MODE $(BUILD_MODE)"
-	$(LD) $(LDFLAGS) $^ $(LDOUTPUTFLAG)$@ $(LDFLAGS_EXTMODE)
+	$(LD) $(LDFLAGS) $(LDFLAGS_EXTMODE) $^ $(LDOUTPUTFLAG)$@
 	@echo "### Generated $@"
 endif
 

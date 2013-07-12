@@ -372,6 +372,8 @@ int_T rt_TermModel(void)
     return(0);
 }
 
+Void clk0Fxn(UArg arg0);
+Semaphore_Handle stopSEM;
 /* Function: main =============================================================
  *
  * Abstract:
@@ -380,7 +382,7 @@ int_T rt_TermModel(void)
 int_T main(int_T argc, const char *argv[])
 {
     /* External mode */
-    rtParseArgsForExtMode(argc, argv);
+//     rtParseArgsForExtMode(argc, argv);
  
     /*******************************************
      * warn if the model will run indefinitely *
@@ -401,9 +403,16 @@ int_T main(int_T argc, const char *argv[])
     /* External mode */
     rtSetTFinalForExtMode(&rtmGetTFinal(RT_MDL));
     rtExtModeCheckInit(NUMST);
-    rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
-                             NUMST,
-                             (boolean_T *)&rtmGetStopRequested(RT_MDL));
+    Clock_Params clkParams;
+
+    /* Create a periodic Clock Instance with period = 1 system time units */
+    Clock_Params_init(&clkParams);
+    clkParams.period = 1;
+    clkParams.startFlag = TRUE;
+    Clock_create(clk0Fxn, 10, &clkParams, NULL);
+//     rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
+//                              NUMST,
+//                              (boolean_T *)&rtmGetStopRequested(RT_MDL));
 
     /***********************************************************************
      * Execute (step) the model.  You may also attach rtOneStep to an ISR, *
@@ -411,22 +420,27 @@ int_T main(int_T argc, const char *argv[])
      * background task.  Note that the generated code sets error status    *
      * to "Simulation finished" when MatFileLogging is specified in TLC.   *
      ***********************************************************************/
-    while (rtmGetErrorStatus(RT_MDL) == NULL &&
-           !rtmGetStopRequested(RT_MDL)) {
-
-        rtExtModePauseIfNeeded(rtmGetRTWExtModeInfo(RT_MDL),
-                               NUMST,
-                               (boolean_T *)&rtmGetStopRequested(RT_MDL));
-
-        if (rtmGetStopRequested(RT_MDL)) break;
-
-        /* external mode */
-        rtExtModeOneStep(rtmGetRTWExtModeInfo(RT_MDL),
-                         NUMST,
-                         (boolean_T *)&rtmGetStopRequested(RT_MDL));
-        
-        rt_OneStep();
-    }
+//     while (rtmGetErrorStatus(RT_MDL) == NULL &&
+//            !rtmGetStopRequested(RT_MDL)) {
+// 
+// //         rtExtModePauseIfNeeded(rtmGetRTWExtModeInfo(RT_MDL),
+// //                                NUMST,
+// //                                (boolean_T *)&rtmGetStopRequested(RT_MDL));
+// 
+//         if (rtmGetStopRequested(RT_MDL)) break;
+// 
+//         /* external mode */
+//         rtExtModeOneStep(rtmGetRTWExtModeInfo(RT_MDL),
+//                          NUMST,
+//                          (boolean_T *)&rtmGetStopRequested(RT_MDL));
+//         
+//         rt_OneStep();
+//     }
+    stopSEM = Semaphore_create(1, NULL, NULL);
+    rtExtModeC6000Startup(rtmGetRTWExtModeInfo(RT_MDL),
+                          NUMST,
+                          (boolean_T *)&rtmGetStopRequested(RT_MDL));
+    BIOS_start();
 
     /*******************************
      * Cleanup and exit (optional) *
@@ -440,6 +454,15 @@ int_T main(int_T argc, const char *argv[])
     rtExtModeShutdown(NUMST);
 
     return rt_TermModel();
+}
+
+/*
+ *  ======== clk0Fxn =======
+ */
+Void clk0Fxn(UArg arg0)
+{
+    /* Base rate */
+    rt_OneStep();
 }
 
 /* [EOF] rt_main.c */
