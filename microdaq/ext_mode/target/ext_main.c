@@ -442,18 +442,6 @@ int_T main(int_T argc, const char *argv[])
                           (boolean_T *)&rtmGetStopRequested(RT_MDL));
     BIOS_start();
 
-    /*******************************
-     * Cleanup and exit (optional) *
-     *******************************/
-
-#ifdef UseMMIDataLogging
-    rt_CleanUpForStateLogWithMMI(rtmGetRTWLogInfo(RT_MDL));
-#endif
-    rt_StopDataLogging(MATFILE,rtmGetRTWLogInfo(RT_MDL));
-
-    rtExtModeShutdown(NUMST);
-
-    return rt_TermModel();
 }
 
 /*
