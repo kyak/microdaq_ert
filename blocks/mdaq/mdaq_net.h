@@ -76,7 +76,7 @@ enum protocol_type{
 #define MDAQNET_NONOS		(0)
 #define MDAQNET_SYSBIOS		(1)
 
-int mdaq_net_init( int mode );
+int mdaq_net_init( void );
 int mdaq_net_open(int port, int type, int protocol, int flags, int blocking);
 int mdaq_net_close(int fd);
 
