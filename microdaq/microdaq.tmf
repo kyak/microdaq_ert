@@ -129,7 +129,7 @@ ifeq ($(EXT_MODE),1)
   LINT_EXT_TCPIP_SRC  =
   ifeq ($(EXTMODE_TRANSPORT),0) #mlink
     EXT_SRC += ext_svr_c6000.c updown_c6000.c ext_work_c6000.c rtiostreamtgt.c
-    EXT_SRC += rtiostream_interface.c
+    EXT_SRC += rtiostream_interface_mdaq.c
     EXT_SRC += mdaq_net.c utils.c
     #EXT_SRC += ext_svr_serial_transport.c ext_serial_pkt.c
     #EXT_SRC += rtiostream_serial_interface.c
