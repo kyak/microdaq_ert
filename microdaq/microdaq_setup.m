@@ -25,10 +25,6 @@ addpref('microdaq','TargetIP',tip{1});
 cd('../blocks');
 lct_genblocks;
 cd(curpath);
-% Generate rtiostream library
-cd('MLink');
-mdaq_makertiostreamlib;
-cd(curpath);
 % Generate help
 %cd('../help/source');
 %genhelp;
