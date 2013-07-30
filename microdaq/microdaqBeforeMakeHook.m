@@ -25,9 +25,9 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     if (strcmp(get_param(modelName,'ExtMode'),'on'))
         % The SYS/BIOS config file for External Mode is a bit different
         % (supports tasks and semaphores).
-        configFile = 'clock_extmode.cfg';
+        configFile = 'sysbios_extmode.cfg';
     else
-        configFile = 'clock.cfg';
+        configFile = 'sysbios.cfg';
     end
     % Run XDC Tools on SYS/BIOS configuration file
     copyfile(fullfile(TargetRoot,configFile));
