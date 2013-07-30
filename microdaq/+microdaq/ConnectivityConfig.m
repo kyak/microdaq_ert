@@ -28,11 +28,11 @@ classdef ConnectivityConfig < rtw.connectivity.Config
             
             % Evaluate name of the rtIOStream shared library
             if ispc
-                mlinklib = 'librtiostreamhst';
+                libname = 'libmwrtiostreamtcpip';
             else
-                mlinklib = 'librtiostreamhst';
+                libname = 'libmwrtiostreamtcpip';
             end
-            rtiostreamLib = fullfile(getpref('microdaq','TargetRoot'),'MLink',[mlinklib sharedLibExt]);
+            rtiostreamLib = [libname sharedLibExt];
             
             hostCommunicator = microdaq.Communicator(...
                 componentArgs, ...
@@ -62,7 +62,8 @@ classdef ConnectivityConfig < rtw.connectivity.Config
             % library (this configures the host-side of the           
             % communications channel)                                  
             rtIOStreamOpenArgs = {...
-                '-ipaddr', TargetIP,...
+                '-hostname', TargetIP,...
+                '-port', '4344',...
                 };
             
             hostCommunicator.setOpenRtIOStreamArgList(...          
