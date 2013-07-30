@@ -44,4 +44,4 @@ end
 unloadlibrary(mlinklib);
 disp('Power cycle MicroDAQ after test completion!');
 % Run the test suite
-rtiostreamtest('mlink',getpref('microdaq','TargetIP'),'')
+rtiostreamtest('tcp',getpref('microdaq','TargetIP'),'4344')

@@ -1,3 +1,12 @@
+/* dac7568.h -- DAC for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+
 #ifndef DAC7568_H
 #define DAC7568_H
 
