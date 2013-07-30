@@ -1,5 +1,5 @@
 %% SYSTLC: MicroDAQ Real-Time Measurement System TMF: microdaq.tmf \
-%% MAKE: make_rtw EXTMODE: no_ext_comm
+%% MAKE: make_rtw EXTMODE: ext_comm
 
 %assign CodeFormat = "Embedded-C"
 %assign Language   = "C"
