@@ -1,3 +1,12 @@
+/* spi_hw.h -- SPI definitions for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+
 #ifndef _HW_SPI_H_
 #define _HW_SPI_H_
 

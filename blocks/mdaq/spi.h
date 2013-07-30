@@ -1,3 +1,12 @@
+/* spi.h -- SPI driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+
 #ifndef _SPI_H_
 #define _SPI_H_
 

@@ -1,5 +1,5 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-#include "mdaq-aout.h"
+#include "mdaq_aout.h"
 
 #endif
 

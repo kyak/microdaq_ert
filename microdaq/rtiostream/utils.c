@@ -1,5 +1,12 @@
+/* utils.c -- Utils for MicroDAQ library
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
 
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "utils.h"
 
 // Accurate n = ((t us * f MHz) - 5) / 1.65
@@ -25,12 +32,12 @@ void delay_us( uint32_t us)
 }
 
 
-inline uint8_t raw_read8(uint32_t addr)
+uint8_t raw_read8(uint32_t addr)
 {
 	return *(uint8_t *)(addr);
 }
 
-inline uint16_t raw_read16(uint32_t addr)
+uint16_t raw_read16(uint32_t addr)
 {
 	return *(uint16_t *)(addr);
 }
@@ -42,7 +49,7 @@ uint32_t raw_read32(uint32_t addr)
 
 
 
-inline void raw_write8(uint8_t data, uint32_t addr)
+void raw_write8(uint8_t data, uint32_t addr)
 {
 	*(uint8_t *)(addr) = data;
 }
@@ -56,4 +63,4 @@ void raw_write32(uint32_t data, uint32_t addr)
 {
 	*(uint32_t *)(addr) = data;
 }
-#endif
+

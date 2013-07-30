@@ -1,3 +1,12 @@
+/* ltc185x.c -- Adc driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+ 
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include <stdint.h>
 
@@ -24,9 +33,9 @@
 
 #define ANALOG_EN					GP5_11
 
-#define LTC185X_SPI_FREQ			(15000000)
+#define LTC185X_SPI_FREQ			(10000000)
 #define LTC185X_SPI_POLARITY		(0)
-#define LTC185X_SPI_PHRASE			(0)
+#define LTC185X_SPI_PHRASE			(1)
 
 static inline void ltc185x_en( void )
 {
@@ -70,7 +79,7 @@ static inline void ltc185x_start_conv( void )
 
     while(!GPIO_getInput( LTC185X_BUSY ));
 } 
-
+#include <stdio.h>
 static int ltc185x_xfer(uint8_t cmd, uint16_t *data)
 {
     int ret = -1;
@@ -126,4 +135,4 @@ int ltc185x_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
     /* read data from converter */
     return ltc185x_xfer(cmd, data);
 }
-#endif
+#endif 

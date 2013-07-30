@@ -1,9 +1,19 @@
+/* mdaq_ain.h -- Adc driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+
+
 #ifndef MDAQ_AIN_H
 #define MDAQ_AIN_H
 
 #include <stdint.h>
-#include "mdaq-trig.h"
-#include "mdaq-ain-cap.h"
+#include "mdaq_trig.h"
+#include "mdaq_ain_cap.h"
 
 #define MDAQ_AIN_MAX		(8)
 

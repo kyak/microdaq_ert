@@ -10,7 +10,7 @@ void ENCInit( unsigned char Channel )
 #endif
 }
 
-void ENCStep(unsigned char Channel, int *position)
+void ENCStep(unsigned char Channel, long *position)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 	*position = eqep_get(Channel);

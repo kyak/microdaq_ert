@@ -1,5 +1,5 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-#include "mdaq-ain.h"
+#include "mdaq_ain.h"
 
 static mdaq_ain_t ch_config[MDAQ_AIN_MAX];
 #endif 
