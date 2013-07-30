@@ -307,7 +307,7 @@ endif
 %$(OBJ_EXT): $(TargetRoot)/%.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
 
-%$(OBJ_EXT): $(TargetRoot)/MLink/%.c
+%$(OBJ_EXT): $(TargetRoot)/rtiostream/%.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
 
 |>START_EXPAND_RULES<|%$(OBJ_EXT) : $(subst \,/,|>EXPAND_DIR_NAME<|)/%.cpp
