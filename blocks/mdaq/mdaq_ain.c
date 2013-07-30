@@ -1,9 +1,17 @@
+/* mdaq_ain.c -- Adc driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
 
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+ #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT) 
 #include <stdio.h>
 #include <string.h>
 
-#include "mdaq-ain.h"
+#include "mdaq_ain.h"
 #include "ltc185x.h"
 
 /* TODO: */

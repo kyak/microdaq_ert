@@ -1,3 +1,12 @@
+/* gpio.c -- GPIO driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+ 
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "gpio.h"
 #include <stdint.h>
@@ -82,17 +91,6 @@ int16_t GPIO_getOutput(GPIO_PinNumber_t pinNumber)
     return (int16_t)input;
 }
 
-/*****************************************************************************
-*
-*   FUNCTION NAME:  int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber)
-*
-*   DESCRIPTION:   Read last set output pin state (it may differ from output
-*                   state due to possible capacitance on pin or 
-*                   pull up/down condition).
-*                   Warning: there is no check if it is output, user must 
-*                   know that before using the function.
-*
-******************************************************************************/
 int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber)
 {
     uint32_t status;
@@ -108,44 +106,6 @@ int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber)
     return (int16_t)status;
 }
 
-/*****************************************************************************
-*
-*   FUNCTION NAME:  int16_t MUX_setPinFunc(GPIO_PinNumber_t pinNumber, 
-*                                                    GPIO_PortDir_t direction)
-*
-*   DESCRIPTION:   Setup IO pin function in MUX
-*                   pinOffset - value from MUX_MuxXXCtrlNibble_t enum where XX 
-*                               stands for MUX number
-*
-******************************************************************************/
-
-int16_t MUX_setPinFunc(MUX_Mux_t muxReg, uint8_t pinOffset, MUX_PinFunc_t newFunc)
-{
-    /* MUX registers are located one by one */
-    volatile uint32_t* pinMux = (uint32_t*) (&PINMUX0 + muxReg);
-    volatile uint32_t temp = *pinMux;
-
-    KICK0R = 0x83e70b13;    /* Kick0 register + data (unlock) */
-    KICK1R = 0x95a4f1e0;    /* Kick1 register + data (unlock) */
-
-    /* Clean up previous value - whole nibble */
-    temp &= ~(0x0f << pinOffset);
-    /* Set new value */
-    temp |= (newFunc << pinOffset);
-    *pinMux = temp;
-
-    return 0;
-}
-
-/*****************************************************************************
-*
-*   FUNCTION NAME:  int16_t GPIO_setEdgeTrigger(GPIO_PinNumber_t pinNumber,
-*                                               GPIO_EdgeType_t edgeType)
-*
-*   DESCRIPTION:   Set pin to trigger either rising or falling edge interrupt
-*
-*
-******************************************************************************/
 int16_t GPIO_setEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType)
 {
     /* Get the bank address from upper nibble - divide by 2 - no of banks per 32bit register */
@@ -170,14 +130,6 @@ int16_t GPIO_setEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType
     return 0;
 }
 
-/*****************************************************************************
-*
-*   FUNCTION NAME:  int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber,
-*                                               GPIO_EdgeType_t edgeType)
-*
-*   DESCRIPTION:   Clear edge pin trigger interrupt
-*
-******************************************************************************/
 int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType)
 {
     /* Get the bank address from upper nibble - divide by 2 - no of banks per 32bit register */
@@ -201,4 +153,4 @@ int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType
 
     return 0;
 }
-#endif
+#endif 

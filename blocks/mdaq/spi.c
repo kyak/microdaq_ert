@@ -1,10 +1,19 @@
+/* spi.c -- SPI driver for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+ 
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT) 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 #include "utils.h"
-#include "spi-hw.h"
+#include "spi_hw.h"
 #include "spi.h"
 
 #define SPI_CLOCK_FREQUENCY		(150000000)
@@ -146,18 +155,7 @@ int spi_xfer(uint8_t bitlen, const void *dout,
 		} else {
 			SPI_SPIBUF;
 		}
-
 	}
-
 	return 0;
-
-/* TODO: */
-#if 0
-out:
-	if (flags & SPI_XFER_END) {
-		SPI_SPIDAT1 = data1_reg_val & ~(1 << 28);
-	}
-#endif
-
 }
 #endif

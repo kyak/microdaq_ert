@@ -1,3 +1,12 @@
+/* dac7568.c -- DAC for MicroDAQ device
+ *
+ * Copyright (C) 2013 Embedded Solutions
+ * All rights reserved.
+ *
+ * This software may be modified and distributed under the terms
+ * of the BSD license.  See the LICENSE file for details.
+ */
+ 
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include <stdio.h>
 #include <stdlib.h>
@@ -184,4 +193,5 @@ void dac7568_init(uint8_t mode)
 
 	dac7568_write_cmd( DAC_REF_ON );
 }
+
 #endif
