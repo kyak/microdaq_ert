@@ -19,9 +19,12 @@ classdef TargetApplicationFramework < rtw.pil.RtIOStreamApplicationFramework
             % Add device driver files to implement the target-side of the
             % host-target rtIOStream communications channel
             buildInfo.addSourceFiles('rtiostreamtgt.c',...
-				fullfile(getpref('microdaq','TargetRoot'),'MLink'));
+				fullfile(getpref('microdaq','TargetRoot'),'rtiostream'));
             buildInfo.addIncludePaths(...
-                fullfile(getpref('microdaq','TargetRoot'),'MLink'));
+                fullfile(getpref('microdaq','TargetRoot'),'..','blocks','mdaq'));
+            buildInfo.addSourcePaths(...
+                fullfile(getpref('microdaq','TargetRoot'),'..','blocks','mdaq'));
+            buildInfo.addSourceFiles({'mdaq_net.c','utils.c'});
         end
     end
 end
