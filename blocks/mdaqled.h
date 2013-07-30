@@ -1,7 +1,7 @@
 #ifndef __MDAQLED_H
 #define __MDAQLED_H
 
-#ifndef MATLAB_MEX_FILE
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "gpio.h"
 #endif
 
