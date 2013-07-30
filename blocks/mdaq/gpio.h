@@ -344,10 +344,5 @@ int16_t GPIO_getLastSetOutput(GPIO_PinNumber_t pinNumber);
 int16_t GPIO_setEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType);
 int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType);
 
-void MUX_init(void);
-int16_t MUX_setPinFunc(MUX_Mux_t muxReg, uint8_t pinOffset, MUX_PinFunc_t newFunc);
-
-
-
 #endif /* GPIO_H */
 
