@@ -29,10 +29,6 @@ cd(curpath);
 %cd('../help/source');
 %genhelp;
 %cd(curpath);
-% External mode support
-cd('ext_mode');
-mdaq_ext_mode(curpath);
-cd(curpath);
 
 sl_refresh_customizations;
 rehash toolbox;
