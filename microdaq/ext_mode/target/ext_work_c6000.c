@@ -78,22 +78,10 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
     Task_Params stop_tid_attr;
     Task_Params_init(&stop_tid_attr);
     
-    attr.priority = 2;
-    attr.stackSize = EXT_MODE_TSK_STACK_SIZE;
     sExtStepArgs.ei = ei;
     sExtStepArgs.numSampTimes = numSampTimes;
     sExtStepArgs.stopReqPtr = stopReqPtr;
     attr.arg1 = (UArg) &sExtStepArgs;
-    //TSK_Attrs attr = {TSK_MINPRI, NULL, EXT_MODE_TSK_STACK_SIZE, 0, NULL, NULL, TRUE};
-    /*TSK_Attrs {
-       Int      priority;
-       Ptr      stack;
-       Uns      stacksize;
-       Uns      stackseg;
-       Ptr      environ;
-       String   name;
-       Bool     exitflag;
-    };*/
 
     // Set external mode state to 
     extmodeSimStatus = EXTMODE_STARTUP;
@@ -116,13 +104,15 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
     stop_tid_attr.priority = 1;
     stop_tid_attr.stackSize = 512;
     stop_tid = Task_create( (Task_FuncPtr) stop_func, &stop_tid_attr, NULL);
-    if (stop_tid == NULL) 
+    if (stop_tid == NULL)
     {
         printf("handle taskpawn error");
     }
-    
+
     // Create external mode task
+    attr.priority = 1;
     attr.stack = (Ptr) &stack_pkt_tid[0];
+    attr.stackSize = EXT_MODE_TSK_STACK_SIZE;
     extern_pkt_tid = Task_create( (Task_FuncPtr) rtExtModeOneStep,
         &attr, NULL );
     if (extern_pkt_tid == NULL) 
@@ -130,6 +120,7 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
         printf("handle taskpawn error");
     }
 
+ 
     /*
      * Pause until receive model start packet - if external mode.
      * Make sure the external mode tasks are running so that 
@@ -159,8 +150,6 @@ void stop_func(UArg arg0, UArg arg1)
      *******************************/
     //rt_TermModel();
     rtExtModeC6000Cleanup(NUMST);
-    
-    
 }
 
 void rtExtModeC6000Cleanup(int_T numSampTimes)
@@ -191,6 +180,7 @@ void rtExtModeOneStep(UArg arg0, ExtStepArgs *arg1)
     while (extmodeSimStatus != EXTMODE_STOPPED) {
         rt_PktServerWork(ei, numSampTimes, stopReqPtr);
         rt_UploadServerWork(numSampTimes);
+		Task_yield();
     }
     rt_ExtModeShutdown(numSampTimes);
     //TSK_epilog( TSK_self() );
