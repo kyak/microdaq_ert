@@ -161,11 +161,11 @@ void rtExtModeC6000Cleanup(int_T numSampTimes)
 
     // Wait for external mode server task to
     // shutdown
-    Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER);
+    /*Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER); */
 
     // Delete external mode task
     //TSK_epilog( extern_pkt_tid );
-    Task_delete( &extern_pkt_tid );
+    /*Task_delete( &extern_pkt_tid ); */
 }
 
 // This task is run at priority level 1, essentially a background
