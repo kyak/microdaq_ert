@@ -1194,6 +1194,7 @@ PUBLIC void rt_PktServer(RTWExtModeInfo *ei,
     //TSK_prolog( TSK_self() );
     for(;;) {
         rt_PktServerWork(ei,numSampTimes,stopReq); 
+        Task_yield(); 
     }
 }
 #endif
