@@ -8,7 +8,7 @@ cm.ExtModeTransports.add('microdaq.tlc', 'MicroDAQ TCP/IP', 'ext_comm', 'Level1'
 function config = loc_createMDAQConfig
 
 config = rtw.connectivity.ConfigRegistry;
-config.ConfigName = 'MicroDAQ connectivity using MLink';
+config.ConfigName = 'MicroDAQ connectivity using TCP/IP';
 config.ConfigClass = 'microdaq.ConnectivityConfig';
 
 % matching system target file
