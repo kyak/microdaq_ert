@@ -1108,8 +1108,6 @@ PUBLIC void rt_PktServerWork(RTWExtModeInfo *ei,
         PRINT_VERBOSE(("got EXT_MODEL_STOP packet.\n"));
 #ifdef C6000_EXT_MODE
         {
-            /*extern Semaphore_Handle stopSEM;
-            Semaphore_post(stopSEM); */
             *stopReq = TRUE;
             rtExtModeC6000Cleanup(NUMST);
         }

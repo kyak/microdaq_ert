@@ -373,7 +373,6 @@ int_T rt_TermModel(void)
 }
 
 Void clk0Fxn(UArg arg0);
-Semaphore_Handle stopSEM;
 /* Function: main =============================================================
  *
  * Abstract:
@@ -436,7 +435,6 @@ int_T main(int_T argc, const char *argv[])
 //         
 //         rt_OneStep();
 //     }
-    stopSEM = Semaphore_create(0, NULL, NULL);
     rtExtModeC6000Startup(rtmGetRTWExtModeInfo(RT_MDL),
                           NUMST,
                           (boolean_T *)&rtmGetStopRequested(RT_MDL));

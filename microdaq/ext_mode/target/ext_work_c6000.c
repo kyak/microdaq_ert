@@ -52,9 +52,6 @@ Semaphore_Handle uploadSem;
 Semaphore_Handle extStartStopSem;
 Task_Handle extern_pkt_tid;
 Task_Handle extern_upload_tid;
-Task_Handle stop_tid;
-void stop_func(UArg, UArg);
-extern Semaphore_Handle stopSEM;
 
 // External mode task stack sizes
 #define EXT_MODE_TSK_STACK_SIZE (6144)
@@ -74,10 +71,7 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
 {
     Task_Params attr;
     Task_Params_init(&attr);
-    
-    Task_Params stop_tid_attr;
-    Task_Params_init(&stop_tid_attr);
-    
+  
     sExtStepArgs.ei = ei;
     sExtStepArgs.numSampTimes = numSampTimes;
     sExtStepArgs.stopReqPtr = stopReqPtr;
@@ -98,16 +92,6 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
     // Initialize user data structure
     rtExtModeInitUD();
     rt_ExtModeInit();
-
-    // Create stop task
-    // Stop task priority is the same than external mode task
-    stop_tid_attr.priority = 1;
-    stop_tid_attr.stackSize = 512;
-    stop_tid = Task_create( (Task_FuncPtr) stop_func, &stop_tid_attr, NULL);
-    if (stop_tid == NULL)
-    {
-        printf("handle taskpawn error");
-    }
 
     // Create external mode task
     attr.priority = 1;
@@ -138,18 +122,6 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
     }
     modelStatus      = TARGET_STATUS_RUNNING;
     extmodeSimStatus = EXTMODE_RUNNING;
-}
-
-void stop_func(UArg arg0, UArg arg1)
-{
-    /* Wait for a stopping condition. */
-    Semaphore_pend(stopSEM, BIOS_WAIT_FOREVER);
-    
-    /*******************************
-     * Cleanup and exit *
-     *******************************/
-    //rt_TermModel();
-    rtExtModeC6000Cleanup(NUMST);
 }
 
 void rtExtModeC6000Cleanup(int_T numSampTimes)
