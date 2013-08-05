@@ -41,6 +41,14 @@
   rtwoptions(3).tooltip        = ['Choose the method to download binary to MicroDAQ'];
   rtwoptions(3).callback       = ''; 
 
+  rtwoptions(4).prompt         = 'Wait for start on target in External Mode';
+  rtwoptions(4).type           = 'Checkbox';
+  rtwoptions(4).default        = 'on';
+  rtwoptions(4).tlcvariable    = 'OnTargetWaitForStartM';
+  rtwoptions(4).makevariable   = 'ON_TARGET_WAIT_FOR_STARTM';
+  rtwoptions(4).tooltip        = ['MicroDAQ will wait for Simulink user to connect and start Real-Time execution in External Mode'];
+  rtwoptions(4).callback       = ''; 
+
   rtwgensettings.DerivedFrom = 'ert.tlc';
   rtwgensettings.BuildDirSuffix = '_mdaq';
   rtwgensettings.Version = '1';

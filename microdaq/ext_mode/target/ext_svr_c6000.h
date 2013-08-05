@@ -19,7 +19,7 @@ extern boolean_T SendPktToHost(const ExtModeAction action,
 
 extern boolean_T rt_ExtModeInit(void);
 
-extern void      rt_PktServerWork(RTWExtModeInfo *ei,
+extern uint32_T      rt_PktServerWork(RTWExtModeInfo *ei,
                                   int_T          numSampTimes,
                                   boolean_T      *stopReq);
 

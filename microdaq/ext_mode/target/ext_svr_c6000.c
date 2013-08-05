@@ -941,7 +941,7 @@ PUBLIC void rt_ExtModeSleep(
  *  data upload line.  If connected, send/receive packets and parameters
  *  on the packet line.
  */
-PUBLIC void rt_PktServerWork(RTWExtModeInfo *ei,
+PUBLIC uint32_T rt_PktServerWork(RTWExtModeInfo *ei,
                              int_T          numSampTimes,
                              boolean_T      *stopReq)
 {
@@ -1177,6 +1177,7 @@ EXIT_POINT:
             ForceDisconnectFromHost(numSampTimes);
         }
     }
+    return pktHdr.type;
 } /* end rt_PktServerWork */
 
 

@@ -118,7 +118,10 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
         // rt_PktServerWork() function posts a semaphore when
         // it receives start packet from host
         // this function in turn runs as part of rt_PktServer task
-        Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER);
+        //Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER);
+        while (rt_PktServerWork(ei, numSampTimes, stopReqPtr) != EXT_MODEL_START)
+        {
+        };
     }
     modelStatus      = TARGET_STATUS_RUNNING;
     extmodeSimStatus = EXTMODE_RUNNING;

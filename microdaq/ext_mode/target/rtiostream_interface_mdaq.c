@@ -137,7 +137,12 @@ PUBLIC const char_T *ExtProcessArgs(
 PUBLIC ExtUserData *ExtUserDataCreate(void)
 {
     static ExtUserData UD;
-
+#if defined(ON_TARGET_WAIT_FOR_STARTM) && ON_TARGET_WAIT_FOR_STARTM == 1
+    boolean_T    waitForStartPkt = TRUE;
+#else
+    boolean_T    waitForStartPkt = FALSE;
+#endif
+    UD.waitForStartPkt = waitForStartPkt;
     return &UD;
 } /* end ExtUserDataCreate */
 
