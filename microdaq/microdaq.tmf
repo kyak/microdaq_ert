@@ -307,6 +307,9 @@ endif
 %$(OBJ_EXT): $(TargetRoot)/ext_mode/target/%.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
 
+%$(OBJ_EXT): $(TargetRoot)/../blocks/mdaq/%.c
+	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
+
 %$(OBJ_EXT): $(TargetRoot)/%.c
 	$(CC) -c $(CFLAGS) $< $(CCOUTPUTFLAG)$@
 
