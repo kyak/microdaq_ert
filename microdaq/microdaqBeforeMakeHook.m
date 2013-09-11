@@ -5,6 +5,11 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     strcmp(get_param(modelName,'TemplateMakefile')  ,'microdaq.tmf') && ...
     strcmp(get_param(modelName,'TargetHWDeviceType'),'Texas Instruments->C6000'))
 
+    % Fixes errors related to java on some systems
+    if ispc
+            setenv('PATH',[getenv('PATH'),';',fullfile(getpref('microdaq','XDCRoot'),'jre','bin')]);
+    end
+ 
     TargetRoot = getpref('microdaq','TargetRoot');
 	CompilerRoot = getpref('microdaq','CompilerRoot');
     CCSRoot = getpref('microdaq','CCSRoot');
@@ -45,6 +50,6 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
         'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
         CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ',configFile];
-    system(syscmd);
+   system(syscmd);
 end
  
