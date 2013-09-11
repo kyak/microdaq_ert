@@ -6,6 +6,7 @@ addpath(fullfile(tgtpath, 'microdaq'));
 addpath(fullfile(tgtpath, 'demos'));
 addpath(fullfile(tgtpath, 'blocks'));
 addpath(fullfile(tgtpath, 'microdaq','ext_mode'));
+addpath(fullfile(tgtpath, 'tools'));
 % addpath(fullfile(tgtpath, 'help'));
 savepath;
 if ispref('microdaq')
