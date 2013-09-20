@@ -12,19 +12,21 @@
 #include <string.h>
 
 #include "mdaq_ain.h"
+#include "mdaq_adc_list.h"
 #include "ltc185x.h"
 
 /* TODO: */
-#define MDAQ_AIN_NOT_SUPPORTED 		(0)
+#define MDAQ_AIN_NOT_SUPPORTED 			(0)
 #define MDAQ_AIN_LTC185X			(1)
 #define MDAQ_AIN_ADS8568			(2)
 
+#if 0 
 static uint8_t get_adc_type( void )
 {
     /* TODO: function should read config */
     return MDAQ_AIN_LTC185X; 
 }
-
+#endif 
 static int init_adc( uint8_t converter )
 {
     switch( converter )
@@ -44,12 +46,12 @@ static int init_adc( uint8_t converter )
     return 0; 
 }
 
-int mdaq_ain_init( void )
+int mdaq_ain_init( int adc_type )
 {
     int result; 
     uint8_t ain_converter; 
 
-    ain_converter = get_adc_type();
+    /* TODO: ain_converter = get_adc_type(); */ 
     if ( ain_converter == MDAQ_AIN_NOT_SUPPORTED)
         return -1; 
    
