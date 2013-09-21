@@ -1,9 +1,10 @@
 #ifndef _MDAQADC_H_
 #define _MDAQADC_H_
 
-void ADCInit(unsigned char Channel, unsigned char Polarity,
-			 unsigned char Range, unsigned char Mode);
+void ADCInit(unsigned char Converter, unsigned char *Channel, 
+		unsigned char ChannelCount, unsigned char Range, 
+		unsigned char Polarity, unsigned char Mode);
 
-void ADCStep(unsigned char Channel, unsigned short *adc_value, float *value );
+void ADCStep(unsigned short *adc_value, double *value, unsigned char ChannelCount);
 
 #endif /* __ADC_H */

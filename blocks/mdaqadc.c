@@ -4,8 +4,9 @@
 static mdaq_ain_t ch_config[MDAQ_AIN_MAX];
 #endif 
 
-void ADCInit(unsigned char Converter, unsigned char *Channel, unsigned char ChannelCount, 
-		unsigned char Range, unsigned char Polarity, unsigned char Mode)
+void ADCInit(unsigned char Converter, unsigned char *Channel, 
+		unsigned char ChannelCount, unsigned char Range, 
+		unsigned char Polarity, unsigned char Mode)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 	if( Channel > MDAQ_AIN_MAX )
@@ -24,7 +25,7 @@ void ADCInit(unsigned char Converter, unsigned char *Channel, unsigned char Chan
 #endif
 }
 
-void ADCStep(unsigned short *adc_value, float *value, unsigned char ChannelCount)
+void ADCStep(unsigned short *adc_value, double *value, unsigned char ChannelCount)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 	if( Channel > MDAQ_AIN_MAX )
