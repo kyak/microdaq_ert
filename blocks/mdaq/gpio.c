@@ -153,4 +153,10 @@ int16_t GPIO_clrEdgeTrigger(GPIO_PinNumber_t pinNumber, GPIO_EdgeType_t edgeType
 
     return 0;
 }
+
+uint32_t GPIO_getBank( GPIO_Bank_t bank)
+{
+	uint32_t* gpio_handle = (uint32_t*) (GPIO_BASE + GPIO_IN_DATA_BASE + (GPIO_BASE_OFFSET * 0));
+	return *gpio_handle;
+}
 #endif 

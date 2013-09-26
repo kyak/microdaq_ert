@@ -38,6 +38,8 @@
 #define 	ADC_WR		GP1_9
 #define 	ADC_RESET	GP2_4
 
+#define 	ADS8568_CH_MAX	(16)
+
 typedef enum
 {
 	ADC_LIDD_MODE = 0,
@@ -53,10 +55,12 @@ typedef struct
 	uint32_t 	freq;
 }adc_config_t;
 
-
 int ads8568_init( void );
 
 int ads8568_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
-		uint8_t mode, uint8_t polarity );
+        uint8_t mode, uint8_t polarity );
+
+int ads8568_scan_ch( uint16_t *data, uint8_t *ch, uint8_t ch_count, 
+        uint8_t range, uint8_t mode, uint8_t polarity );
 
 #endif /* ADS8568_H_ */

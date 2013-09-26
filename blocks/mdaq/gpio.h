@@ -336,6 +336,7 @@ typedef enum
 
 
 void GPIO_init(void);
+uint32_t GPIO_getBank( GPIO_Bank_t bank);
 int16_t GPIO_setDir(GPIO_PinNumber_t pinNumber, GPIO_PortDir_t direction);
 int16_t GPIO_getInput(GPIO_PinNumber_t pinNumber);
 int16_t GPIO_getOutput(GPIO_PinNumber_t pinNumber);
