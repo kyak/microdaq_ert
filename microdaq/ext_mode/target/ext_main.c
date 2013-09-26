@@ -38,6 +38,7 @@
 # define MODEL_STEP       CONCAT(MODEL,_step)
 # define MODEL_TERMINATE  CONCAT(MODEL,_terminate)
 # define RT_MDL           CONCAT(MODEL,_M)
+# define STEP_TIME       (1000) /* TODO: */
 #endif
 
 #ifndef NUMST
@@ -404,11 +405,28 @@ int_T main(int_T argc, const char *argv[])
     rtExtModeCheckInit(NUMST);
     Clock_Params clkParams;
 
+    Timer_Params user_sys_tick_params;
+    Timer_Handle user_sys_tick_timer;
+
+    /* Create timer for user system tick */
+    Timer_Params_init(&user_sys_tick_params);
+    user_sys_tick_params.period = 1000;
+    user_sys_tick_params.periodType = Timer_PeriodType_MICROSECS;
+    user_sys_tick_params.arg = 1;
+    user_sys_tick_timer = Timer_create(1,
+    		(ti_sysbios_hal_Timer_FuncPtr)Clock_tick, &user_sys_tick_params, NULL);
+
+    if(user_sys_tick_timer == NULL)
+    {
+    	System_abort("Unable to create user system tick timer!");
+    }
+
     /* Create a periodic Clock Instance with period = 1 system time units */
     Clock_Params_init(&clkParams);
     clkParams.period = 1;
     clkParams.startFlag = TRUE;
     Clock_create(clk0Fxn, 10, &clkParams, NULL);
+    
 //     rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
 //                              NUMST,
 //                              (boolean_T *)&rtmGetStopRequested(RT_MDL));

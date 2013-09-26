@@ -36,20 +36,10 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     end
     % Run XDC Tools on SYS/BIOS configuration file
     copyfile(fullfile(TargetRoot,configFile));
-    Ts = str2double(get_param(modelName,'FixedStep'));
-    % Clock.tickPeriod is in microseconds
-    if isnan(Ts)
-        % 'auto' in model
-        Ts = 0.2*1e6;
-    else
-        Ts = Ts*1e6;
-    end
-    fd = fopen(configFile,'a');
-    fprintf(fd,'Clock.tickPeriod = %s;',num2str(Ts));
-    fclose(fd);
     syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
         'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
         CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ',configFile];
-   system(syscmd);
+    % TODO: optimize XDCtools execution
+    system(syscmd);
 end
  
