@@ -19,25 +19,24 @@
 
 typedef struct mdaq_ain_config_
 {
-    int8_t              ch; 
+	uint8_t				ch;
     float               gain;
     float               offset; 
     float               value; 
     float               value_raw; 
     float               range_low; 
     float               range_high; 
-    uint16_t		adc_value;
+    uint16_t			adc_value;
     mdaq_ain_range_t    range;  
     mdaq_ain_mode_t     mode; 
-    mdaq_ain_pol_t	polarity;
+    mdaq_ain_pol_t		polarity;
 }mdaq_ain_t; 
 
-
-int mdaq_ain_init( int adc_type ); 
+int mdaq_ain_init( uint8_t adc_type );
 int mdaq_ain_config_init( mdaq_ain_t *config ); 
 
-int mdaq_ain_read( mdaq_ain_t *config ); 
-int mdaq_ain_scan( mdaq_ain_t *config, uint8_t no_ch, uint32_t no_scans,
-						float *buf, uint32_t buf_len);
+int mdaq_ain_read( mdaq_ain_t *c);
+int mdaq_ain_scan( mdaq_ain_t *c, uint8_t ch[], uint8_t ch_count,
+		uint16_t *adc_value, float *value);
 
 #endif /* MDAQ_AIN_H */ 

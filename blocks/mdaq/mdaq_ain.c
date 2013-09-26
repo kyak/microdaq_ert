@@ -8,54 +8,119 @@
  */
 
  #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT) 
-#include <stdio.h>
 #include <string.h>
 
+#include "mdaq_ain_adc.h"
 #include "mdaq_ain.h"
-#include "mdaq_adc_list.h"
-#include "ltc185x.h"
+
+struct mdaq_adc
+{
+    uint8_t ch_count;
+    uint8_t resolution;
+    uint32_t cap;
+    float hi_range; 
+    float low_range; 
+
+    int (*init)( void );
+    int (*read)( uint16_t*, uint8_t, uint8_t, uint8_t, uint8_t);
+    int (*scan)( uint16_t*, uint8_t*, uint8_t, uint8_t, uint8_t, uint8_t);
+}; 
 
 /* TODO: */
-#define MDAQ_AIN_NOT_SUPPORTED 			(0)
-#define MDAQ_AIN_LTC185X			(1)
-#define MDAQ_AIN_ADS8568			(2)
+static struct mdaq_adc mdaq_adc;
 
-#if 0 
+#if 0
 static uint8_t get_adc_type( void )
 {
-    /* TODO: function should read config */
-    return MDAQ_AIN_LTC185X; 
+    return MDAQ_AIN_ADS8568;
 }
-#endif 
-static int init_adc( uint8_t converter )
+#endif
+
+static int config_adc( struct mdaq_adc *c, uint8_t adc )
 {
-    switch( converter )
+	int adc_driver;
+
+	if ( adc > ADC09)
+		return -1;
+
+	adc_driver = (adc > MDAQ_AIN_LTC185X) ? MDAQ_AIN_ADS8568 : MDAQ_AIN_LTC185X;
+
+	memset((void *)c, 0x0, sizeof(struct mdaq_adc));
+
+	/* Assign driver */
+    switch( adc_driver )
     {
-        case MDAQ_AIN_LTC185X: 
-        	ltc185x_init();
+        case MDAQ_AIN_LTC185X:
+        	c->init	= ltc185x_init;
+        	c->read	= ltc185x_read_ch;
+        	c->scan	= ltc185x_scan_ch;
+        	break;
 
-        break; 
-        case MDAQ_AIN_ADS8568: 
+        case MDAQ_AIN_ADS8568:
+        	c->init	= ads8568_init;
+        	c->read	= ads8568_read_ch;
+        	c->scan	= ads8568_scan_ch;
+        	break;
 
-        break; 
         default:
-
-        break;
+        	/* unsupported converter - clear structure */
+        	memset((void *)c, 0x0, sizeof(struct mdaq_adc));
+        	return -1;
     }
 
-    return 0; 
+    /* other ADC parameters */
+    c->ch_count 	= adc_configs[adc].ch_count;
+    c->resolution 	= adc_configs[adc].resolution;
+    c->hi_range 	= adc_configs[adc].high_range;
+    c->low_range 	= adc_configs[adc].low_range;
+
+    return 0;
 }
 
-int mdaq_ain_init( int adc_type )
+static int mdaq_ain_calc( mdaq_ain_t *c, const
+		uint16_t adc_value[], float value[], uint8_t ch_count )
+{
+	int ch_index;
+
+	if (c->range == AIN_RANGE_5V)
+	{
+		c->range_high = 5.0;
+		c->range_low  = 0.0;
+	}
+	else if (c->range == AIN_RANGE_10V)
+	{
+		c->range_high = 10.0;
+		c->range_low  = 0.0;
+	}
+
+	if(c->polarity == AIN_POL_BIPOLAR)
+		c->range_low = -c->range_high;
+
+	for(ch_index = 0; ch_index < ch_count; ch_index++)
+	{
+		if(c->polarity == AIN_POL_BIPOLAR)
+			value[ch_index] = ((c->range_high - c->range_low) / 0xffff) *
+						(int16_t)(adc_value[ch_index]);
+		else
+			value[ch_index] = ((c->range_high - c->range_low) / 0xffff) *
+						adc_value[ch_index];
+	}
+    return 0;
+}
+
+int mdaq_ain_init( uint8_t adc )
 {
     int result; 
-    uint8_t ain_converter; 
 
-    /* TODO: ain_converter = get_adc_type(); */ 
-    if ( ain_converter == MDAQ_AIN_NOT_SUPPORTED)
+#if 0 /* TODO: detect hardware */
+    int detected_adc = get_adc_type();
+    if ( detected_adc =! adc)
         return -1; 
+#endif
+
+    config_adc( &mdaq_adc, adc );
    
-    result = init_adc( ain_converter ); 
+    result = mdaq_adc.init();
     if ( result < 0 ) 
         return -1; 
      
@@ -70,15 +135,14 @@ int mdaq_ain_config_init( mdaq_ain_t *config )
     memset((void *)config, 0, sizeof(mdaq_ain_t)); 
     config->gain = 1;
 
-    return 0; 
+    return 0;
 }
-
 
 int mdaq_ain_read( mdaq_ain_t *config )
 {
 	float range;
 
-	ltc185x_read_ch(&(config->adc_value), config->ch, config->range,
+	mdaq_adc.read(&(config->adc_value), config->ch, config->range,
 			config->mode, config->polarity);
 
 	if (config->range == AIN_RANGE_5V)
@@ -107,26 +171,23 @@ int mdaq_ain_read( mdaq_ain_t *config )
     return 0; 
 }
 
-
-int mdaq_ain_scan( mdaq_ain_t *config, uint8_t no_ch, uint32_t no_scans,
-		 	 	 float *buf, uint32_t buf_len)
+int mdaq_ain_scan( mdaq_ain_t *c, uint8_t ch[], uint8_t ch_count,
+		uint16_t *adc_value, float *value)
 {
-	uint8_t ch_index;
-	uint32_t sample_count = 0, scan_index;
+	/* check parameters */
+	if(mdaq_adc.scan == NULL ||
+			ch_count == 0 ||
+			ch_count > MDAQ_AIN_MAX ||
+			adc_value == NULL ||
+			value == NULL )
+		return -1;
 
-	if( no_scans > buf_len)
-		no_scans  = buf_len;
+	int result = mdaq_adc.scan(adc_value, ch, ch_count,
+			c->range, c->mode, c->polarity);
 
+	/* calculate real value */
+	mdaq_ain_calc(c, adc_value, value, ch_count );
 
-	for(scan_index = 0; scan_index < no_scans; scan_index++)
-	{
-		for(ch_index = 0; ch_index < no_ch; ch_index++)
-		{
-			mdaq_ain_read(&config[ch_index]);
-			buf[sample_count++] = config[ch_index].value_raw;
-		}
-	}
-
-    return 0; 
+	return 0;
 }
 #endif

@@ -19,7 +19,7 @@ MDAQADC.SourceFiles = {'mdaqadc.c','mdaq_ain.c','ltc185x.c','ads8568.c','spi.c',
 MDAQADC.IncPaths = {'mdaq'};
 MDAQADC.SrcPaths = {'mdaq'};
 MDAQADC.StartFcnSpec = 'ADCInit(uint8 p1, uint8 p2[], uint8 p3, uint8 p4, uint8 p5, uint8 p6)';
-MDAQADC.OutputFcnSpec = 'ADCStep(uint16 y1[p3], double y2[p3], uint8 p3)';
+MDAQADC.OutputFcnSpec = 'ADCStep(uint16 y1[p3], double y2[p3], uint8 p2[], uint8 p3)';
 MDAQADC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQADC.Options.supportsMultipleExecInstances = true;
