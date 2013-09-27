@@ -38,7 +38,6 @@
 # define MODEL_STEP       CONCAT(MODEL,_step)
 # define MODEL_TERMINATE  CONCAT(MODEL,_terminate)
 # define RT_MDL           CONCAT(MODEL,_M)
-# define STEP_TIME       (1000) /* TODO: */
 #endif
 
 #ifndef NUMST
@@ -410,9 +409,10 @@ int_T main(int_T argc, const char *argv[])
 
     /* Create timer for user system tick */
     Timer_Params_init(&user_sys_tick_params);
-    user_sys_tick_params.period = 1000;
+    user_sys_tick_params.period = STEP_TIME;
     user_sys_tick_params.periodType = Timer_PeriodType_MICROSECS;
     user_sys_tick_params.arg = 1;
+
     user_sys_tick_timer = Timer_create(1,
     		(ti_sysbios_hal_Timer_FuncPtr)Clock_tick, &user_sys_tick_params, NULL);
 
