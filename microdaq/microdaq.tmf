@@ -111,10 +111,6 @@ CXXFLAGS += $(CXXDEBUG)
 LDFLAGS += $(LDDEBUG)
 endif
 
-# Mangle LDFLAGS for building PIL mode application
-# This is necessary because XDCTools generate derived SYS/BIOS files on the level of top model (one level up).
-LDFLAGS_PIL = $(subst configPkg,../configPkg,$(LDFLAGS))
-
 #----------------------------- External mode -----------------------------------
 # Uncomment -DVERBOSE to have information printed to stdout
 # To add a new transport layer, see the comments in
@@ -282,7 +278,7 @@ endif
 ifeq ($(BUILD_MODE), pil_application)
 $(MODEL)$(PROGRAM_FILE_EXT): $(PREBUILT_OBJS) $(OBJS) $(MODELLIB) $(MODELREF_LINK_LIBS) $(SHARED_LIB) $(LIBS)
 	@echo "### BUILD_MODE $(BUILD_MODE)"
-	$(LD) $(LDFLAGS_PIL) $^ $(LDOUTPUTFLAG)$@ 
+	$(LD) $(LDFLAGS) $^ $(LDOUTPUTFLAG)$@ 
 	@echo "### Generated $@"
 endif
 
