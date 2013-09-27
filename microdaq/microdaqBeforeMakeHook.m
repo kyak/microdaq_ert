@@ -5,11 +5,6 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     strcmp(get_param(modelName,'TemplateMakefile')  ,'microdaq.tmf') && ...
     strcmp(get_param(modelName,'TargetHWDeviceType'),'Texas Instruments->C6000'))
 
-    % Fixes errors related to java on some systems
-    if ispc
-            setenv('PATH',[getenv('PATH'),';',fullfile(getpref('microdaq','XDCRoot'),'jre','bin')]);
-    end
- 
     TargetRoot = getpref('microdaq','TargetRoot');
 	CompilerRoot = getpref('microdaq','CompilerRoot');
     CCSRoot = getpref('microdaq','CCSRoot');
@@ -26,20 +21,5 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     fwrite(fid, sprintf('XDCRoot       = %s\n', XDCRoot));
     fwrite(fid, sprintf('BIOSRoot      = %s\n', BIOSRoot));
     fclose(fid);
-
-    if (strcmp(get_param(modelName,'ExtMode'),'on'))
-        % The SYS/BIOS config file for External Mode is a bit different
-        % (supports tasks and semaphores).
-        configFile = 'sysbios_extmode.cfg';
-    else
-        configFile = 'sysbios.cfg';
-    end
-    % Run XDC Tools on SYS/BIOS configuration file
-    copyfile(fullfile(TargetRoot,configFile));
-    syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
-        'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
-        CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ',configFile];
-    % TODO: optimize XDCtools execution
-    system(syscmd);
 end
  
