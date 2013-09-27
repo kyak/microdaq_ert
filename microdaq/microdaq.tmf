@@ -122,6 +122,7 @@ LDFLAGS_PIL = $(subst configPkg,../configPkg,$(LDFLAGS))
 ifeq ($(EXT_MODE),1)
   EXT_CC_OPTS = -DEXT_MODE -D$(COMPUTER) -DMODEL=$(MODEL) -DNUMST=$(NUMST) -DONESTEPFCN=$(ONESTEPFCN) #-DVERBOSE
   EXT_CC_OPTS += -DTERMFCN=$(TERMFCN) -DMAT_FILE=$(MAT_FILE) -DC6000_EXT_MODE -DON_TARGET_WAIT_FOR_STARTM=$(ON_TARGET_WAIT_FOR_STARTM)
+  EXT_CC_OPTS += -DSTEP_SIZE=$(SAMPLE_TIME)
   #To support legacy DSP/BIOS functions for C6000 target in external mode
   #EXT_CC_OPTS += --include_path="$(BIOSRoot)/packages/ti/bios/include"
   EXT_LIB     =
