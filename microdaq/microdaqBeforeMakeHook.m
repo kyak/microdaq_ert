@@ -20,6 +20,16 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     fwrite(fid, sprintf('CCSRoot       = %s\n', CCSRoot));
     fwrite(fid, sprintf('XDCRoot       = %s\n', XDCRoot));
     fwrite(fid, sprintf('BIOSRoot      = %s\n', BIOSRoot));
+    % Use target paths makefile to pass information about sample time
+    Ts = str2double(get_param(modelName,'FixedStep'));
+    % User timer is in microseconds
+    if isnan(Ts)
+        % 'auto' in model
+        Ts = 0.2*1e6;
+    else
+        Ts = Ts*1e6;
+    end
+    fprintf(fid,'SAMPLE_TIME = %s\n',num2str(Ts));
     fclose(fid);
 end
  
