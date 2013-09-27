@@ -3,3 +3,5 @@ blocks/rtwmakecfg.m
 blocks/sfun_*
 microdaq/MLink/librtiostreamhst.*
 microdaq/ext_mode/*.mex*
+microdaq/sysbios/src
+microdaq/sysbios/configPkg
