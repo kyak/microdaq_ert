@@ -409,7 +409,7 @@ int_T main(int_T argc, const char *argv[])
 
     /* Create timer for user system tick */
     Timer_Params_init(&user_sys_tick_params);
-    user_sys_tick_params.period = STEP_TIME;
+    user_sys_tick_params.period = STEP_SIZE;
     user_sys_tick_params.periodType = Timer_PeriodType_MICROSECS;
     user_sys_tick_params.arg = 1;
 
