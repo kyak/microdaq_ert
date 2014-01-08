@@ -10,6 +10,7 @@ MDAQLED.SrcPaths = {'mdaq'};
 MDAQLED.OutputFcnSpec = 'mdaqled_set(uint32 p1, uint8 u1)';
 % Support calling from within For-Each subsystem
 MDAQLED.Options.supportsMultipleExecInstances = true;
+
 %% ADC
 % Populate legacy_code structure with information
 MDAQADC = legacy_code('initialize');
@@ -23,6 +24,7 @@ MDAQADC.OutputFcnSpec = 'ADCStep(uint16 y1[p3], double y2[p3], uint8 p2[], uint8
 MDAQADC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQADC.Options.supportsMultipleExecInstances = true;
+
 %% DAC
 % Populate legacy_code structure with information
 MDAQDAC = legacy_code('initialize');
@@ -37,6 +39,7 @@ MDAQDAC.TerminateFcnSpec = 'DACTerminate(single p7[], uint8 p3, uint8 p6 )';
 MDAQDAC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQDAC.Options.supportsMultipleExecInstances = true;
+
 %% QEP
 % Populate legacy_code structure with information
 MDAQQEP = legacy_code('initialize');
@@ -54,7 +57,7 @@ MDAQQEP.Options.supportsMultipleExecInstances = true;
 % Populate legacy_code structure with information
 MDAQPRUREGSET = legacy_code('initialize');
 MDAQPRUREGSET.SFunctionName = 'sfun_MDAQPRUREGSET';
-MDAQPRUREGSET.SourceFiles = {'mdaqpru.c'};
+MDAQPRUREGSET.SourceFiles = {'mdaqpru.c','pru.c'};
 MDAQPRUREGSET.IncPaths = {'mdaq'};
 MDAQPRUREGSET.SrcPaths = {'mdaq'};
 MDAQPRUREGSET.StartFcnSpec = 'PRUInit()';
@@ -62,11 +65,12 @@ MDAQPRUREGSET.OutputFcnSpec = 'PRURegSetStep(uint8 p1, uint32 u1)';
 MDAQPRUREGSET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQPRUREGSET.Options.supportsMultipleExecInstances = true;
+
 % PRU REG SET
 % Populate legacy_code structure with information
 MDAQPRUREGGET = legacy_code('initialize');
 MDAQPRUREGGET.SFunctionName = 'sfun_MDAQPRUREGGET';
-MDAQPRUREGGET.SourceFiles = {'mdaqpru.c'};
+MDAQPRUREGGET.SourceFiles = {'mdaqpru.c','pru.c'};
 MDAQPRUREGGET.IncPaths = {'mdaq'};
 MDAQPRUREGGET.SrcPaths = {'mdaq'};
 MDAQPRUREGGET.StartFcnSpec = 'PRUInit()';
@@ -74,6 +78,7 @@ MDAQPRUREGGET.OutputFcnSpec = 'PRURegGetStep(uint8 p1, uint32 y1[1])';
 MDAQPRUREGGET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQPRUREGGET.Options.supportsMultipleExecInstances = true;
+
 % MEM Write
 % Populate legacy_code structure with information
 MDAQMEMWR = legacy_code('initialize');
@@ -87,6 +92,7 @@ MDAQMEMWR.OutputFcnSpec = 'MEMWRStep(single u1[], uint8 p2)';
 MDAQMEMWR.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQMEMWR.Options.supportsMultipleExecInstances = true;
+
 %% MEM Read
 % Populate legacy_code structure with information
 MDAQMEMRD = legacy_code('initialize');
@@ -100,8 +106,24 @@ MDAQMEMRD.OutputFcnSpec = 'MEMRDStep(single y1[p2], uint8 p2)';
 MDAQMEMRD.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQMEMRD.Options.supportsMultipleExecInstances = true;
+
+%% MOTOR
+% Populate legacy_code structure with information
+MDAQMOTOR = legacy_code('initialize');
+MDAQMOTOR.SFunctionName = 'sfun_MDAQMOTOR';
+MDAQMOTOR.HeaderFiles = {'mdaqmotor.h'};
+MDAQMOTOR.SourceFiles = {'mdaqmotor.c','pru.c'};
+MDAQMOTOR.IncPaths = {'mdaq'};
+MDAQMOTOR.SrcPaths = {'mdaq'};
+MDAQMOTOR.StartFcnSpec = 'MOTORInit(uint8 p1, uint8 p2, uint8 p3)';
+MDAQMOTOR.OutputFcnSpec = 'MOTORStep(uint8 p1, uint8 u1, uint8 u2, uint32 u3)';
+MDAQMOTOR.TerminateFcnSpec = 'MOTORTerminate(uint8 p1)';
+MDAQMOTOR.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQMOTOR.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
