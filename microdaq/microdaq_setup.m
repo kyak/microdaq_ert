@@ -40,6 +40,22 @@ syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
 'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
 CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ','sysbios.cfg'];
 system(syscmd);
+
+% Append extra linker section to main linker script 
+extra_linker_file_fd = fopen('sysbios_linker.cmd', 'r');
+if extra_linker_file_fd > -1
+    cd('configPkg'); 
+    linker_file_fd = fopen('linker.cmd', 'a');
+    if linker_file_fd > -1
+        tmp = fread(extra_linker_file_fd, Inf, '*uchar');
+        fwrite(linker_file_fd, tmp, 'uchar');
+        fclose(extra_linker_file_fd);
+        fclose(linker_file_fd);   
+    else
+        fclose(extra_linker_file_fd);
+    end
+end
+
 cd(curpath);
 
 % Generate help
