@@ -9,6 +9,7 @@ void MEMWRInit( unsigned int Address, unsigned char ch_count, unsigned char *des
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 	memwr_ptr = (float *)Address; 
+	memset((void *)memwr_ptr, 0x0, 0x800000);
 #endif
 }
 
