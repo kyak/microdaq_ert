@@ -46,13 +46,13 @@ EXTERNC MDAQ_API int mlink_mem_close(
 EXTERNC MDAQ_API int mlink_mem_set(
 		IO	int 		*link_fd, 
 		IN	uint32_t 	addr, 
-		IN	uint8_t 	*data, 
+		IN	int8_t 		*data, 
 		IN	uint32_t 	len);
 
 EXTERNC MDAQ_API int mlink_mem_get( 
 		IO	int 		*link_fd, 
 		IN	uint32_t 	addr, 
-		IO	uint8_t 	*data, 
+		IO	int8_t 		*data, 
 		IN	uint32_t 	len);
 
 EXTERNC MDAQ_API int mlink_gpio_set_dir(
