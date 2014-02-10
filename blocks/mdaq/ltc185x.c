@@ -48,7 +48,8 @@ static inline void ltc185x_en( void )
 	}
 }
 
-static inline uint8_t ltc185x_create_cmd(uint8_t ch, uint8_t range, uint8_t mode, uint8_t polarity)
+static inline uint8_t ltc185x_create_cmd(uint8_t ch, uint8_t range, 
+                uint8_t mode, uint8_t polarity)
 {
     uint8_t cmd = 0; 
     
@@ -79,7 +80,7 @@ static inline void ltc185x_start_conv( void )
 
     while(!GPIO_getInput( LTC185X_BUSY ));
 } 
-#include <stdio.h>
+
 static int ltc185x_xfer(uint8_t cmd, uint16_t *data)
 {
     int ret = -1;
@@ -99,7 +100,8 @@ static int ltc185x_xfer(uint8_t cmd, uint16_t *data)
 int ltc185x_init( void )
 {
 	/* Configure SPI bus for analog */
-	spi_setup_bus(LTC185X_SPI_FREQ, LTC185X_SPI_POLARITY, LTC185X_SPI_PHRASE);
+	spi_setup_bus(LTC185X_SPI_FREQ, 
+            LTC185X_SPI_POLARITY, LTC185X_SPI_PHRASE);
 
 	/* Enable analog section */
 	GPIO_setDir(ANALOG_EN,    GPIO_OUTPUT);
@@ -135,4 +137,44 @@ int ltc185x_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
     /* read data from converter */
     return ltc185x_xfer(cmd, data);
 }
+
+int ltc185x_scan_ch( uint16_t *data, uint8_t *ch, uint8_t ch_count, 
+        uint8_t range, uint8_t mode, uint8_t polarity )
+{
+    volatile int ch_index;
+    volatile uint8_t cmd;
+    
+    if ( ch_count > LTC185X_CH_MAX || ch_count == 0 )
+        return -1; 
+
+    /* if one channel to read use standard channel read function */
+    if ( ch_count == 1 )
+    {
+    	ltc185x_read_ch(data, *ch, range, mode, polarity);
+    	return 1;
+    }
+
+    /* enable ltc185x converter */
+    ltc185x_en();
+
+    /* prepare first command for converter */ 
+    cmd = ltc185x_create_cmd(ch[0], range, mode, polarity);
+
+    /* issue first conversion */ 
+    ltc185x_xfer(cmd, 0);
+    ltc185x_start_conv();
+
+    for (ch_index = 0; ch_index < ch_count; ch_index++)
+    {
+    	if ( ch_index + 1 < ch_count )
+    		cmd = ltc185x_create_cmd(ch[ch_index + 1], range, mode, polarity);
+        
+        /* read data from converter and start conversion */
+        ltc185x_xfer(cmd, &data[ch_index]);
+        ltc185x_start_conv();
+    }
+
+    return ch_index;
+}
 #endif 
+

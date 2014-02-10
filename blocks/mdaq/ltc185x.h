@@ -12,7 +12,13 @@
 #include <stdint.h> 
 #include "mdaq_ain_cap.h"
 
+#define LTC185X_CH_MAX      (8)
+
 int ltc185x_init( void ); 
+
+int ltc185x_scan_ch( uint16_t *data, uint8_t *ch, uint8_t ch_count, 
+        uint8_t range, uint8_t mode, uint8_t polarity );
+
 int ltc185x_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
 		uint8_t mode, uint8_t polarity );
 

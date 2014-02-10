@@ -1,42 +1,29 @@
-#ifndef MDAQ_H
-#define MDAQ_H
+/*
+ * Copyright 2013-2014 Embedded Solutions
+ *
+ * File: MLink.h     $Revision: 1.0.2 $
+ *
+ * Abstract:
+ *	MLink function prototypes
+ */
+
+#ifndef MLINK_H
+#define MLINK_H
 
 #include <stdint.h>
-
-#ifdef _WIN32
-#define APP_BUILD
-#endif
-
-#ifdef APP_BUILD
-#define EXTERNC
-#define MDAQ_API
-#define SCI_MDAQ_API
-#endif 
-
-#ifdef DLL_BUILD
-#define MDAQ_API __declspec(dllexport)
-#define EXTERNC extern "C" 
-#define SCI_MDAQ_API
-#define SCI_EXTERNC
-#endif 
-
-#ifdef SCI_DLL_BUILD
-#define SCI_EXTERNC extern "C" 
-#define SCI_MDAQ_API __declspec(dllexport)
-#define MDAQ_API
-#define EXTERNC
-#endif 
-
-#ifdef __GNUC__
-#define MDAQ_API extern
-#define EXTERNC 
-#endif 
 
 #define OUT
 #define IN
 #define IO
 
-EXTERNC MDAQ_API char *mlink_error( int err );
+#define EXTERNC
+#define MDAQ_API
+
+EXTERNC MDAQ_API char *mlink_error( 
+        IN  int         err );
+
+EXTERNC MDAQ_API char *mlink_version( 
+		IO	int 		*link_fd);
 
 EXTERNC MDAQ_API int mlink_connect(
 		IN	const char 	*addr,		
@@ -59,13 +46,13 @@ EXTERNC MDAQ_API int mlink_mem_close(
 EXTERNC MDAQ_API int mlink_mem_set(
 		IO	int 		*link_fd, 
 		IN	uint32_t 	addr, 
-		IN	int8_t 		data[], 
+		IN	int8_t 		*data, 
 		IN	uint32_t 	len);
 
 EXTERNC MDAQ_API int mlink_mem_get( 
 		IO	int 		*link_fd, 
 		IN	uint32_t 	addr, 
-		IO	int8_t 		data[], 
+		IO	int8_t 		*data, 
 		IN	uint32_t 	len);
 
 EXTERNC MDAQ_API int mlink_gpio_set_dir(
@@ -168,12 +155,12 @@ EXTERNC MDAQ_API int mlink_pru_mem_set(
 		IO	int 		*link_fd, 
 		IN	uint8_t 	pru_num, 
 		IN	uint32_t 	addr, 
-		IN	char 		data[], 
+		IN	uint8_t 	data[], 
 		IN	uint32_t 	len);
 
 EXTERNC MDAQ_API int mlink_pru_mem_get(
-		IO	int 		*link_fd,
-		IN	uint8_t 	pru_num, 
+		IO	int 		*link_fd, 
+		IN	uint8_t 	pru_num,
 		IN	uint32_t 	addr, 
 		IO	char 		data[], 
 		IN	uint32_t 	len);
@@ -190,4 +177,41 @@ EXTERNC MDAQ_API int mlink_pru_reg_set(
 		IN	uint8_t 	reg, 
 		IN	uint32_t	reg_value);
 
-#endif /* MDAQ_H */ 
+/* AIN - Analog INput access functions */ 
+EXTERNC MDAQ_API int mlink_ain_setup_ch(
+		IO	int 		*link_fd, 
+		IN	uint8_t 	ch,
+		IN	uint8_t 	range,
+		IN	uint8_t		mode);
+
+EXTERNC MDAQ_API int mlink_ain_read(
+		IO	int 		*link_fd, 
+		IN	uint8_t 	ch,
+		IN	uint8_t 	range,
+		IN	uint8_t		mode,
+		OUT	float		*value);
+
+EXTERNC MDAQ_API int mlink_ain_scan(
+		IO	int 		*link_fd, 
+		IN	uint8_t 	ch_begin,
+		IN	uint8_t 	ch_end,
+		IN	uint32_t	freq,
+		IN	uint32_t 	count, 
+		OUT	float		data[]);
+
+EXTERNC MDAQ_API int mlink_ain_scan_bg(
+		IO	int 		*link_fd, 
+		IN	uint8_t 	ch_begin,
+		IN	uint8_t 	ch_end,
+		IN	uint32_t	freq,
+		IN	uint32_t 	count );
+
+EXTERNC MDAQ_API int mlink_ain_scan_state(
+		IO	int 		*link_fd);
+
+EXTERNC MDAQ_API int mlink_ain_scan_data(
+		IO	int 		*link_fd,
+		OUT	float		data[],
+		IN	uint32_t	data_size);
+
+#endif /* MLINK_H */ 

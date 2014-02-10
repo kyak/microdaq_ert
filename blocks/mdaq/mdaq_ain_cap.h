@@ -1,6 +1,20 @@
 #ifndef _MDAQ_AIN_CAP_
 #define _MDAQ_AIN_CAP_
 
+/* available ADCs */
+enum adc_id
+{
+	ADC01 = 1,
+	ADC02,
+	ADC03,
+	ADC04,
+	ADC05,
+	ADC06,
+	ADC07,
+	ADC08,
+	ADC09
+};
+
 typedef enum mdaq_ain_range_
 {
     AIN_RANGE_DEFAULT = 0,

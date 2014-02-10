@@ -8,10 +8,13 @@
  */
  
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
+
+#include "dac7568_calibrate_data.h"
 
 #include "gpio.h"
 #include "spi.h"
@@ -27,16 +30,20 @@
 #define	DAC_REF_OFF				(0x08000000)
 
 #define CMD_WR_IN_REG			(0x00000000)
-#define CMD_UP_REGS				(0x01000000)
+#define CMD_WR_UP_REGS			(0x01000000)
+#define CMD_WR_UP_ALL_REGS		(0x02000000)
+
+#define CMD_SYNC_MODE 			(CMD_WR_IN_REG)
 
 #define CMD_WR_CREAR_CODE_REG 	(0x05000000)
+#define CMD_SET_INIT_SCALE		(0x05000000)
 #define CMD_CLR_TO_MID_SCALE 	(0x05000001)
 #define CMD_CLR_TO_FULL_SCALE	(0x05000002)
 #define CMD_IGNORE_CLR_PIN		(0x05000003)
 
 #define	CMD_WR_LDAC_REG			(0x06000000)
 #define CMD_SOFT_RESET			(0x07000000)
-#define CMD_WR_IN_REG_UP_ALL_REGS 		(0x02000000)
+#define CMD_WR_IN_REG_UP_ALL_REGS (0x02000000)
 #define CMD_WR_IN_REG_AND_UP 	(0x03000000)
 #define CMD_PWR_UP_DACS			(0x04000000)
 
@@ -51,8 +58,8 @@
 #define CMD_REF_OFF				(0x09B00000)		/* Power down internal reference all the time regardless of state of DACs */
 #define CMD_FLEX_TO_STATIC		(0x09000000)
 
-#define DAC7568_SYNC_MODE		(0)
-#define DAC7568_ASYNC_MODE		(1)
+#define DAC7568_ASYNC_MODE		(1 << 1)
+#define DAC7568_SYNC_MODE		(1 << 2)
 
 #define DAC7568_SYNC			GP4_1
 #define DAC7568_LDAC			GP4_2
@@ -64,6 +71,8 @@
 #define DAC7568_SPI_FREQ		(40000000)
 #define DAC7568_SPI_POLARITY	(1)
 #define DAC7568_SPI_PHRASE		(1)
+
+
 
 static inline void dac7568_en( void )
 {
@@ -112,17 +121,41 @@ static void dac7568_write_cmd(uint32_t cmd)
 	GPIO_setOutput(DAC7568_SYNC, GPIO_LOW);
 
 	dac7568_write_spi(cmd, sizeof(cmd));
-
 	return;
+}
+
+/* TODO: move to mdaq_aout.c */
+/* TODO: do the dac calibration in a proper way */
+static uint16_t dac7568_calibrate_data(uint8_t ch, uint16_t data)
+{
+
+	float x;
+	x = (float)data * 0.00488281;
+	x -= 10.0;
+
+	if (ch > 7)
+		return data;
+
+	/* Calibration - linear function */
+	data += (x * calibrate_data[(ch * 2)]) + calibrate_data[(ch * 2) + 1];
+
+	if (data > 4095)
+		data = 4095;
+
+	return data;
 }
 
 static int dac7568_write(uint32_t cmd, uint8_t ch, uint16_t data)
 {
 	dac7568_en();
 
+	/* TODO:  */
+	data = dac7568_calibrate_data(ch, data);
+
 	switch(cmd)
 	{
 		case CMD_WR_IN_REG:
+		case CMD_WR_UP_REGS:
 		case CMD_WR_IN_REG_UP_ALL_REGS:
 		case CMD_WR_IN_REG_AND_UP:
 			dac7568_setup_cmd(&cmd, ch, data);
@@ -157,17 +190,57 @@ static int dac7568_write(uint32_t cmd, uint8_t ch, uint16_t data)
 	return 0;
 }
 
-void dac7568_write_ch(uint8_t ch, uint16_t value)
+int dac7568_write_multi(uint8_t ch[], uint8_t ch_count,
+		uint16_t data[], uint32_t mode)
 {
-	dac7568_write(CMD_WR_IN_REG_AND_UP, ch, value);
+	int ch_index;
+	uint32_t cmd = CMD_WR_LDAC_REG;
+
+	if( ch_count > 8)
+		return -1;
+
+	if (mode & DAC7568_SYNC_MODE)
+	{
+		/* setup channels for simultaneous update */
+		cmd |= 0xff;
+		for( ch_index = 0; ch_index < ch_count; ch_index++ )
+			cmd &=	~(1 <<  ch[ch_index]);
+
+		dac7568_write_cmd(cmd);
+
+		for( ch_index = 0; ch_index < ch_count; ch_index++ )
+			dac7568_write(CMD_SYNC_MODE, ch[ch_index], data[ch_index]);
+
+		GPIO_setOutput(DAC7568_LDAC, GPIO_LOW);
+		/* TODO: 80ns delay minimum */
+		GPIO_setOutput(DAC7568_LDAC, GPIO_HIGH);
+	}
+	else
+	{
+		for( ch_index = 0; ch_index < ch_count; ch_index++ )
+			dac7568_write(CMD_WR_IN_REG, ch[ch_index], data[ch_index]);
+	}
+	return 0;
 }
 
-void dac7568_write_ch_reg(uint8_t ch, uint16_t value)
+void dac7568_write_data(uint8_t ch, uint16_t value)
 {
 	dac7568_write(CMD_WR_IN_REG, ch, value);
 }
 
-void dac7568_init(uint8_t mode)
+void dac7568_set_mode( uint8_t mode )
+{
+	static uint8_t mode_local = 0;
+	if ( mode_local != mode )
+	{
+		if ( mode == DAC7568_ASYNC_MODE)
+			dac7568_write_cmd( DAC_IGNORE_LDAC );
+
+		mode_local = mode;
+	}
+}
+
+void dac7568_init(uint8_t mode, uint8_t init_state)
 {
 	spi_setup_bus(DAC7568_SPI_FREQ, DAC7568_SPI_POLARITY, DAC7568_SPI_PHRASE);
 
@@ -176,7 +249,10 @@ void dac7568_init(uint8_t mode)
 	GPIO_setOutput(ANALOG_EN, GPIO_LOW);
 
 	GPIO_setDir(DAC7568_LDAC, GPIO_OUTPUT);
-	GPIO_setOutput(DAC7568_LDAC, GPIO_LOW);
+	GPIO_setOutput(DAC7568_LDAC,
+			( mode == DAC7568_SYNC_MODE ? GPIO_HIGH : GPIO_LOW) );
+
+	GPIO_setDir(DAC7568_CLR, GPIO_OUTPUT);
 
 	/* Enable DAC7568 converter */
 	GPIO_setDir(DAC7568_EN, GPIO_OUTPUT);
@@ -186,12 +262,17 @@ void dac7568_init(uint8_t mode)
 	GPIO_setOutput(DAC7568_SYNC, GPIO_HIGH);
 
 	dac7568_write_cmd( DAC_SOFT_RESET );
-	dac7568_write_cmd( DAC_POWER_UP );
-	dac7568_write_cmd( DAC_IGNORE_CLR );
-	if ( mode == DAC7568_ASYNC_MODE)
-		dac7568_write_cmd( DAC_IGNORE_LDAC );
 
+	GPIO_setOutput(DAC7568_CLR, GPIO_HIGH);
+	dac7568_write_cmd( CMD_SET_INIT_SCALE |
+			(init_state < 4 ? init_state : 0) );
+	GPIO_setOutput(DAC7568_CLR, GPIO_LOW);
+
+
+	dac7568_write_cmd( DAC_POWER_UP );
 	dac7568_write_cmd( DAC_REF_ON );
+
+	dac7568_set_mode(mode);
 }
 
 #endif

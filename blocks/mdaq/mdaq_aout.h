@@ -14,8 +14,14 @@
 
 #define MDAQ_AOUT_MAX		(8)
 
-#define MDAQ_AOUT_ASYNC_MODE	(0)
-#define MDAQ_AOUT_SYNC_MODE		(1)
+#define AOUT_ASYNC			(1 << 1)
+#define AOUT_SYNC			(1 << 2)
+
+enum dac_id
+{
+	DAC01 = 1,
+	DAC02
+};
 
 typedef struct mdaq_aout_config_
 {
@@ -25,10 +31,12 @@ typedef struct mdaq_aout_config_
     float               range_low;
     float               range_high;
     uint16_t			dac_value;
-    uint8_t     		mode;
+    uint16_t     		mode;
 }mdaq_aout_t;
 
-int mdaq_aout_init( void );
-int mdaq_aout_write(uint8_t ch, uint16_t data );
+int mdaq_aout_init( uint8_t converter,  uint8_t mode);
+int mdaq_aout_write(uint8_t ch, float data );
+int mdaq_aout_write_multi( uint8_t ch[], uint8_t ch_count,
+		const float *value, uint32_t mode);
 
 #endif /* MDAQ_AOUT_H */

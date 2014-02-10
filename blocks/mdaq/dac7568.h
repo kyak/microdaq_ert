@@ -13,8 +13,12 @@
 #include <stdint.h>
 #define DAC7568_RESOLUTION 		(12)
 
-void dac7568_init(uint8_t mode);
-void dac7568_write_ch(uint8_t ch, uint16_t value);
-void dac7568_write_ch_reg(uint8_t ch, uint16_t value);
+#define DAC_ZERO_SCALE			(0)
+#define DAC_MID_SCALE			(1)
+#define DAC_FULL_SCALE			(2)
+
+void dac7568_init(uint8_t mode, uint8_t init_state);
+void dac7568_write_data(uint8_t ch, float value, uint8_t mode);
+int dac7568_write_multi(uint8_t ch[], uint8_t ch_count, uint16_t data[], uint32_t mode);
 
 #endif /* DAC7568_H */
