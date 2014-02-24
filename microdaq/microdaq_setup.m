@@ -35,9 +35,16 @@ if ispc
 end
 
 % Run XDC Tools on SYS/BIOS configuration file
-cd('sysbios'); 
+cd('sysbios');
+% Remove old SYS/BIOS, if existing
+if isdir('configPkg')
+    rmdir('configPkg','s');
+end
+if isdir('src')
+    rmdir('src','s');
+end
 syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
-'ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
+'/ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
 CompilerRoot,'" --compileOptions "-g --optimize_with_debug" ','sysbios.cfg'];
 system(syscmd);
 
