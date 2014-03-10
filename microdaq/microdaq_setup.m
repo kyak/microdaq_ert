@@ -41,7 +41,8 @@ if isdir('configPkg')
     rmdir('configPkg','s');
 end
 if isdir('src')
-    rmdir('src','s');
+    % causes problems during installation ???
+    %rmdir('src','s');
 end
 syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
 '/ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
