@@ -52,7 +52,8 @@ You should be good to go.
 **What this package would like to have:**
 
 - Simulink library blocks for:
+        
         * PWM
-
+ 
 - More documentation
 - PIL mode profiling
