@@ -122,8 +122,50 @@ MDAQMOTOR.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQMOTOR.Options.supportsMultipleExecInstances = true;
 
+% Digital IO set 
+% Populate legacy_code structure with information
+MDAQDIOSET = legacy_code('initialize');
+MDAQDIOSET.SFunctionName = 'sfun_MDAQDIOSET';
+MDAQDIOSET.HeaderFiles = {'mdaqdio.h'};
+MDAQDIOSET.SourceFiles = {'mdaqdio.c', 'mdaq_dio.c','gpio.c'};
+MDAQDIOSET.IncPaths = {'mdaq'};
+MDAQDIOSET.SrcPaths = {'mdaq'};
+MDAQDIOSET.StartFcnSpec = 'DIOInit(uint8 p1, uint8 p2, uint8 p3)';
+MDAQDIOSET.OutputFcnSpec = 'DIOSetStep(uint8 p1, uint8 u1)';
+MDAQDIOSET.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQDIOSET.Options.supportsMultipleExecInstances = true;
+
+% Digital IO get 
+% Populate legacy_code structure with information
+MDAQDIOGET = legacy_code('initialize');
+MDAQDIOGET.SFunctionName = 'sfun_MDAQDIOGET';
+MDAQDIOGET.HeaderFiles = {'mdaqdio.h'};
+MDAQDIOGET.SourceFiles = {'mdaqdio.c','mdaq_dio.c','gpio.c'};
+MDAQDIOGET.IncPaths = {'mdaq'};
+MDAQDIOGET.SrcPaths = {'mdaq'};
+MDAQDIOGET.StartFcnSpec = 'DIOInit(uint8 p1, uint8 p2, uint8 p3)';
+MDAQDIOGET.OutputFcnSpec = 'DIOGetStep(uint8 p1, uint8 y1[1])';
+MDAQDIOGET.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQDIOGET.Options.supportsMultipleExecInstances = true;
+
+% Function key 
+% Populate legacy_code structure with information
+MDAQFNCKEY = legacy_code('initialize');
+MDAQFNCKEY.SFunctionName = 'sfun_MDAQFNCKEY';
+MDAQFNCKEY.HeaderFiles = {'mdaqdio.h'};
+MDAQFNCKEY.SourceFiles = {'mdaqdio.c','mdaq_dio.c','gpio.c'};
+MDAQFNCKEY.IncPaths = {'mdaq'};
+MDAQFNCKEY.SrcPaths = {'mdaq'};
+MDAQFNCKEY.StartFcnSpec = 'DIOFncKeyInit(uint8 p1)';
+MDAQFNCKEY.OutputFcnSpec = 'DIOFncKeyStep(uint8 p1, uint8 y1[1])';
+MDAQFNCKEY.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
