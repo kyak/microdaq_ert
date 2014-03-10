@@ -40,15 +40,19 @@ You should be good to go.
 - External Mode support
 - Simulink library blocks for:
         
-        * Built-in LEDs
         * ADC
         * DAC
         * Quadrature Encoder
+        * MEMORY R/W 
+        * DIO 
+        * Built-in LEDs
+        * Built-in KEYs 
+        * PRU - Real-time processing unit 
 
 **What this package would like to have:**
 
 - Simulink library blocks for:
+        * PWM
 
-        * GPIO, PWM, PRU (for additional processing units)
 - More documentation
 - PIL mode profiling
