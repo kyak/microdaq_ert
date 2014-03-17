@@ -37,12 +37,11 @@ end
 % Run XDC Tools on SYS/BIOS configuration file
 cd('sysbios');
 % Remove old SYS/BIOS, if existing
-if isdir('configPkg')
+if isdir(fullfile(pwd,'configPkg'))
     rmdir('configPkg','s');
 end
-if isdir('src')
-    % causes problems during installation ???
-    %rmdir('src','s');
+if isdir(fullfile(pwd,'src'))
+    rmdir('src','s');
 end
 syscmd = [XDCRoot,'/xs --xdcpath="',BIOSRoot,'/packages;',CCSRoot,...
 '/ccs_base;" xdc.tools.configuro -o configPkg -t ti.targets.elf.C674 -p ti.platforms.evmOMAPL137 -r release -c "',...
