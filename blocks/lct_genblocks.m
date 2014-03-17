@@ -49,7 +49,7 @@ MDAQQEP.SourceFiles = {'mdaqenc.c','eqep.c','utils.c'};
 MDAQQEP.IncPaths = {'mdaq'};
 MDAQQEP.SrcPaths = {'mdaq'};
 MDAQQEP.StartFcnSpec = 'ENCInit(uint8 p1)';
-MDAQQEP.OutputFcnSpec = 'ENCStep(uint8 p1, int32 y1[1])';
+MDAQQEP.OutputFcnSpec = 'ENCStep(uint8 p1, int32 y1[1], uint8 y2[1], uint8 u1)';
 MDAQQEP.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQQEP.Options.supportsMultipleExecInstances = true;
@@ -132,6 +132,7 @@ MDAQDIOSET.IncPaths = {'mdaq'};
 MDAQDIOSET.SrcPaths = {'mdaq'};
 MDAQDIOSET.StartFcnSpec = 'DIOInit(uint8 p1, uint8 p2, uint8 p3)';
 MDAQDIOSET.OutputFcnSpec = 'DIOSetStep(uint8 p1, uint8 u1)';
+MDAQDIOSET.TerminateFcnSpec = 'DIOSetTerminate(uint8 p1, uint8 p4)';
 MDAQDIOSET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQDIOSET.Options.supportsMultipleExecInstances = true;

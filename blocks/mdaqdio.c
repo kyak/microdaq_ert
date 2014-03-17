@@ -15,6 +15,13 @@ void DIOSetStep(unsigned char pin, unsigned char value)
 #endif    
 }
 
+void DIOSetTerminate(unsigned char pin, unsigned char value)
+{
+#ifndef MATLAB_MEX_FILE
+	dio_set(pin, value); 
+#endif    
+}
+
 void DIOGetStep(unsigned char pin, unsigned char *value)
 {
 #ifndef MATLAB_MEX_FILE
@@ -36,9 +43,9 @@ void DIOFncKeyStep(unsigned char func_key, unsigned char *value)
 {
 #ifndef MATLAB_MEX_FILE
 	if ( func_key == 1 ) 
-		*value = dio_get(F1_KEY); 
+		*value = !dio_get(F1_KEY); 
 	else if ( func_key == 2 ) 
-		*value = dio_get(F2_KEY); 
+		*value = !dio_get(F2_KEY); 
 #endif    
 }
 

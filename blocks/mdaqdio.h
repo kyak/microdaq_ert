@@ -7,6 +7,7 @@
 
 void DIOInit(unsigned char pin, unsigned char dir, unsigned char init_value);
 void DIOSetStep(unsigned char pin, unsigned char value);
+void DIOSetTerminate(unsigned char pin, unsigned char value);
 void DIOGetStep(unsigned char pin, unsigned char *value);
 
 void DIOFncKeyInit(unsigned char func_key);
