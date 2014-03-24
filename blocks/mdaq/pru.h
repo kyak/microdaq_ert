@@ -9,17 +9,15 @@
 
 #ifndef _PRU_H_
 #define _PRU_H_
+
 #include <stdint.h>
 
-#define PRU_DATARAM_BASE	(0x01C30000)
-
-#define SHARED_REG_SIZE         (4)
-#define SHARED_REG_COUNT        (16)
-#define PRU_DATARAM_SIZE (512)
-#define PRU_DATARAM_REG_OFFSET ((PRU_DATARAM_SIZE / 2) - (SHARED_REG_SIZE * SHARED_REG_COUNT))
+int pru_load(uint8_t pru_num, const uint32_t *pru_code, uint32_t code_size);
+int pru_run(uint8_t pru_num);
+int pru_stop (uint8_t pru_num);
 
 uint32_t pru_get_reg(uint8_t pru_num, uint8_t reg_num); 
 void pru_set_reg(uint8_t pru_num, uint8_t reg_num, uint32_t reg_value); 
 
-
 #endif /* _PRU_H_ */
+

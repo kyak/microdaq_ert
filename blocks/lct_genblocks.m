@@ -53,6 +53,21 @@ MDAQQEP.OutputFcnSpec = 'ENCStep(uint8 p1, int32 y1[1], uint8 y2[1], uint8 u1)';
 MDAQQEP.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQQEP.Options.supportsMultipleExecInstances = true;
+
+%% Encoder
+% Populate legacy_code structure with information
+MDAQENC = legacy_code('initialize');
+MDAQENC.SFunctionName = 'sfun_MDAQENC';
+MDAQENC.HeaderFiles = {'mdaqenc.h'};
+MDAQENC.SourceFiles = {'mdaqenc.c','eqep.c','utils.c','pru.c', 'mdaq_dio.c', 'gpio.c'};
+MDAQENC.IncPaths = {'mdaq'};
+MDAQENC.SrcPaths = {'mdaq'};
+MDAQENC.StartFcnSpec = 'ENC2Init()';
+MDAQENC.OutputFcnSpec = 'ENC2Step(uint8 u1, uint8 u2, uint8 u3, uint8 u4, int32 y1[1], uint8 y2[1], int32 y3[1], uint8 y4[1], int32 y5[1], uint8 y6[1], int32 y7[1], uint8 y8[1])';
+MDAQENC.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQENC.Options.supportsMultipleExecInstances = true;
+
 % PRU REG GET
 % Populate legacy_code structure with information
 MDAQPRUREGSET = legacy_code('initialize');
@@ -166,7 +181,7 @@ MDAQFNCKEY.SampleTime = 'parameterized';
 MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
 
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);

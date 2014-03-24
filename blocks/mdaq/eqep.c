@@ -56,3 +56,4 @@ int32_t eqep_get( uint8_t eqep_num )
 	return (int32_t)(eqep_cnt - EQEP_CNT_INIT_VALUE);
 }
 #endif 
+
