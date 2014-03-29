@@ -10,6 +10,7 @@ slConfigUISetEnabled(hDlg, hSrc, 'TargetLang', 0);
 % The target is model reference compliant
 slConfigUISetVal(hDlg, hSrc, 'ModelReferenceCompliant', 'on');
 slConfigUISetEnabled(hDlg, hSrc, 'ModelReferenceCompliant', false);
+slConfigUISetVal(hDlg, hSrc, 'SolverMode', 'SingleTasking'); 
 
 % Configure solver
 slConfigUISetVal(hDlg, hSrc, 'SolverType', 'Fixed-step');
@@ -25,3 +26,7 @@ slConfigUISetVal(hDlg, hSrc, 'CodeReplacementLibrary', 'TI C674x');
 
 % Configure PostCodeGen Command to execute
 slConfigUISetVal(hDlg, hSrc, 'PostCodeGenCommand', 'microdaq_postcodegen(buildInfo)');
+
+% External Mode default settings
+slConfigUISetVal(hDlg, hSrc, 'ExtModeMexArgs', 'getpref(''microdaq'',''TargetIP'') 1 4344');
+slConfigUISetVal(hDlg, hSrc, 'ExtModeStaticAlloc', 'On');
