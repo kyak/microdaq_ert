@@ -62,6 +62,9 @@ PRIVATE void rtExtModeInitUD(void);
 //extern void TSK_epilog(TSK_Handle hTask);
 //extern void waitNetworkStartup(void);
 
+/* TODO: should be called in ext_main.c */ 
+extern int_T rt_TermModel(void); 
+
 ExtStepArgs sExtStepArgs;
 
 // External mode startup function
@@ -137,6 +140,9 @@ void rtExtModeC6000Cleanup(int_T numSampTimes)
     // Wait for external mode server task to
     // shutdown
     /*Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER); */
+    
+    /* TODO: should be called in ext_main.c */ 
+    rt_TermModel();
 
     // Delete external mode task
     //TSK_epilog( extern_pkt_tid );
