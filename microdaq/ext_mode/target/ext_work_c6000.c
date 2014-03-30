@@ -64,6 +64,7 @@ PRIVATE void rtExtModeInitUD(void);
 
 /* TODO: should be called in ext_main.c */ 
 extern int_T rt_TermModel(void); 
+extern Clock_Handle rt_task_handle;
 
 ExtStepArgs sExtStepArgs;
 
@@ -141,8 +142,6 @@ void rtExtModeC6000Cleanup(int_T numSampTimes)
     // shutdown
     /*Semaphore_pend(extStartStopSem, BIOS_WAIT_FOREVER); */
     
-    /* TODO: should be called in ext_main.c */ 
-    rt_TermModel();
 
     // Delete external mode task
     //TSK_epilog( extern_pkt_tid );
@@ -165,7 +164,11 @@ void rtExtModeOneStep(UArg arg0, ExtStepArgs *arg1)
     }
     rt_ExtModeShutdown(numSampTimes);
     //TSK_epilog( TSK_self() );
-
+    
+    /* TODO: */ 
+    Clock_delete( &rt_task_handle );
+    rt_TermModel();
+    
     // Signal completion of Pkt / Upload server work
     Semaphore_post(extStartStopSem);
 }

@@ -143,6 +143,8 @@ extern void MODEL_TERMINATE(void);
  extern void MODEL_STEP(int_T tid);  /* multirate step function */
 #endif
 
+/* TODO: */
+Clock_Handle rt_task_handle;
 
 /*==================================*
  * Global data local to this module *
@@ -425,7 +427,7 @@ int_T main(int_T argc, const char *argv[])
     Clock_Params_init(&clkParams);
     clkParams.period = 1;
     clkParams.startFlag = TRUE;
-    Clock_create(clk0Fxn, 10, &clkParams, NULL);
+    rt_task_handle = Clock_create(clk0Fxn, 10, &clkParams, NULL);
     
 //     rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
 //                              NUMST,
