@@ -9,12 +9,12 @@ slConfigUISetEnabled(hDlg, hSrc, 'TargetLang', 0);
 
 % The target is model reference compliant
 slConfigUISetVal(hDlg, hSrc, 'ModelReferenceCompliant', 'on');
-slConfigUISetEnabled(hDlg, hSrc, 'ModelReferenceCompliant', false);
-slConfigUISetVal(hDlg, hSrc, 'SolverMode', 'SingleTasking'); 
+slConfigUISetEnabled(hDlg, hSrc, 'ModelReferenceCompliant', false); 
 
 % Configure solver
 slConfigUISetVal(hDlg, hSrc, 'SolverType', 'Fixed-step');
 slConfigUISetVal(hDlg, hSrc, 'Solver', 'FixedStepDiscrete');
+slConfigUISetVal(hDlg, hSrc, 'SolverMode', 'SingleTasking');
 
 % Use our own ert_main.c and disable this option at all
 slConfigUISetVal(hDlg, hSrc, 'ERTCustomFileTemplate', 'microdaq_main.tlc');
