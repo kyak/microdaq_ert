@@ -1,4 +1,4 @@
-function mlink_download(outfile,TargetRoot)
+function mlink_download(outfile,TargetRoot,upload)
 % MLink library name
 if ispc
     arch = computer('arch');
@@ -21,21 +21,36 @@ if result < 0
     unloadlibrary(mlinklib);
     error('Error connecting to MicroDAQ: %s',out);
 end
-% Load DSP binary to MicroDAQ
-disp('### Loading DSP binary to MicroDAQ...');
-result = calllib(mlinklib,'mlink_dsp_load',link_fd.Value,outfile,'');
-if result < 0
-    out = calllib(mlinklib,'mlink_error',result);
+
+% Upload DSP binary to MicroDAQ
+if upload == 1
+    result = calllib(mlinklib, 'mlink_dsp_upload', link_fd);
+    if result < 0
+        out = calllib(mlinklib,'mlink_error',result);
+        unloadlibrary(mlinklib);   
+        error('Error during uploading DSP firmware: %s',out);
+    end
     unloadlibrary(mlinklib);
-    error('Error loading binary to MicroDAQ: %s',out);
-end
-% Start DSP binary on MicroDAQ
-disp('### Starting DSP binary on MicroDAQ...');
-result = calllib(mlinklib,'mlink_dsp_start',link_fd.Value);
-if result < 0
-    out = calllib(mlinklib,'mlink_error',result);
+    disp('### Uploading DSP application to MicroDAQ...');
+    msgbox('DSP application upload complite!','Success');
+else
+
+    % Load DSP binary to MicroDAQ
+    disp('### Loading DSP binary to MicroDAQ...');
+    result = calllib(mlinklib,'mlink_dsp_load',link_fd.Value,outfile,'');
+    if result < 0
+        out = calllib(mlinklib,'mlink_error',result);
+        unloadlibrary(mlinklib);
+        error('Error loading binary to MicroDAQ: %s',out);
+    end
+    % Start DSP binary on MicroDAQ
+    disp('### Starting DSP binary on MicroDAQ...');
+    result = calllib(mlinklib,'mlink_dsp_start',link_fd.Value);
+    if result < 0
+        out = calllib(mlinklib,'mlink_error',result);
+        unloadlibrary(mlinklib);
+        error('Error starting binary on MicroDAQ: %s',out);
+    end
+    % Unload MLink library
     unloadlibrary(mlinklib);
-    error('Error starting binary on MicroDAQ: %s',out);
 end
-% Unload MLink library
-unloadlibrary(mlinklib);

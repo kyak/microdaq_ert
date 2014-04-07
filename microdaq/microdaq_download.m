@@ -44,6 +44,6 @@ if strcmp(downloadMethod,'"JTAG"')
     end
 else
     disp('### Using MLink for download...');
-    mlink_download(outfile,TargetRoot);
+    mlink_download(outfile,TargetRoot,0);
 end
 end
