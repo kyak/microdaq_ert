@@ -110,9 +110,9 @@ static int mdaq_net_rpc_exec( mdaq_net_rpc_t *call, uint32_t timeout )
 
 #ifndef	MDAQNET_SYSBIOS_MODE
 
-	/* TODO: without delay test fails !!! */
+	/* TODO: */ 
 	volatile int d = 0;
-	for (d = 0; d < 5000; d++);
+	for (d = 0; d < 50000; d++);
 
 	while( !call->sem1 )
 		mdaq_net_rpc_get_params(call);

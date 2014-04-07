@@ -75,6 +75,10 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
 {
     Task_Params attr;
     Task_Params_init(&attr);
+    Semaphore_Params sem_params; 
+    Semaphore_Params_init(&sem_params);
+
+    sem_params.mode = ti_sysbios_knl_Semaphore_Mode_BINARY; 
   
     sExtStepArgs.ei = ei;
     sExtStepArgs.numSampTimes = numSampTimes;
@@ -86,7 +90,7 @@ void rtExtModeC6000Startup( RTWExtModeInfo *ei,
 
 	// Initialize semaphores used for external mode
 	// communication
-    uploadSem = Semaphore_create(1, NULL, NULL);
+    uploadSem = Semaphore_create(1, &sem_params, NULL);
     extStartStopSem = Semaphore_create(1, NULL, NULL);
 
     // Pause until Ethernet network initialization completes
@@ -160,7 +164,6 @@ void rtExtModeOneStep(UArg arg0, ExtStepArgs *arg1)
     while (extmodeSimStatus != EXTMODE_STOPPED) {
         rt_PktServerWork(ei, numSampTimes, stopReqPtr);
         rt_UploadServerWork(numSampTimes);
-		Task_yield();
     }
     rt_ExtModeShutdown(numSampTimes);
     //TSK_epilog( TSK_self() );
