@@ -48,12 +48,15 @@ You should be good to go.
         * Built-in LEDs
         * Built-in KEYs 
         * PRU - Real-time processing unit 
+        * PWM
 
 **What this package would like to have:**
 
 - Simulink library blocks for:
         
-        * PWM
+        * UDP  
+        * TCP
+        * File operations
  
 - More documentation
 - PIL mode profiling

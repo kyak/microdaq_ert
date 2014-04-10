@@ -221,11 +221,25 @@ MDAQUARTRECV.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQUARTRECV.Options.supportsMultipleExecInstances = true;
 
+% PWM
+% Populate legacy_code structure with information
+MDAQPWM = legacy_code('initialize');
+MDAQPWM.SFunctionName = 'sfun_MDAQPWM';
+MDAQPWM.HeaderFiles = {'mdaqpwm.h'};
+MDAQPWM.SourceFiles = {'mdaqpwm.c', 'mdaq_pwm.c', 'ehrpwm.c', 'utils.c'};
+MDAQPWM.IncPaths = {'mdaq'};
+MDAQPWM.SrcPaths = {'mdaq'};
+MDAQPWM.StartFcnSpec = 'PWMInit(uint8 p1, uint32 p2, uint8 p3)';
+MDAQPWM.OutputFcnSpec = 'PWMStep(uint8 p1, double u1, double u2)';
+MDAQPWM.TerminateFcnSpec = 'PWMTerminate(uint8 p1)';
+MDAQPWM.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQPWM.Options.supportsMultipleExecInstances = true;
 
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
        MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:)];
+       MDAQUARTRECV(:);MDAQPWM];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
