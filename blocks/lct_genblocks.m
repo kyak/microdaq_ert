@@ -180,8 +180,52 @@ MDAQFNCKEY.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
 
+% UART Config 
+% Populate legacy_code structure with information
+MDAQUARTCONF = legacy_code('initialize');
+MDAQUARTCONF.SFunctionName = 'sfun_MDAQUARTCONF';
+MDAQUARTCONF.HeaderFiles = {'mdaquart.h'};
+MDAQUARTCONF.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTCONF.IncPaths = {'mdaq'};
+MDAQUARTCONF.SrcPaths = {'mdaq'};
+MDAQUARTCONF.StartFcnSpec = 'UARTConfig(uint8 p1, uint8 p2, uint8 p3, uint8 p4, uint8 p5, uint8 p6)';
+%%MDAQUARTCONF.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQUARTCONF.Options.supportsMultipleExecInstances = true;
+
+% UART Send 
+% Populate legacy_code structure with information
+MDAQUARTSEND = legacy_code('initialize');
+MDAQUARTSEND.SFunctionName = 'sfun_MDAQUARTSEND';
+MDAQUARTSEND.HeaderFiles = {'mdaquart.h'};
+MDAQUARTSEND.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTSEND.IncPaths = {'mdaq'};
+MDAQUARTSEND.SrcPaths = {'mdaq'};
+MDAQUARTSEND.StartFcnSpec = 'UARTSendInit(uint8 p1, uint16 p2)';
+MDAQUARTSEND.OutputFcnSpec = 'UARTSend(uint8 p1, uint8 u1[p2])';
+MDAQUARTSEND.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQUARTSEND.Options.supportsMultipleExecInstances = true;
+
+% UART Receive 
+% Populate legacy_code structure with information
+MDAQUARTRECV = legacy_code('initialize');
+MDAQUARTRECV.SFunctionName = 'sfun_MDAQUARTRECV';
+MDAQUARTRECV.HeaderFiles = {'mdaquart.h'};
+MDAQUARTRECV.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTRECV.IncPaths = {'mdaq'};
+MDAQUARTRECV.SrcPaths = {'mdaq'};
+MDAQUARTRECV.StartFcnSpec = 'UARTRecvInit(uint8 p1, uint8 p2, uint8 p3, uint16 p4)';
+MDAQUARTRECV.OutputFcnSpec = 'UARTRecv(uint8 p1, uint8 y1[p2], int32 y2[1])';
+MDAQUARTRECV.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+MDAQUARTRECV.Options.supportsMultipleExecInstances = true;
+
+
 %% Put multiple registration files together
-def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:)];
+def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
+       MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
+       MDAQUARTRECV(:)];
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
