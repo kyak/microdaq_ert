@@ -1,17 +1,18 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+
+#include <string.h>
+
 #include "mdaq_uart.h"
 #include "mdaquart.h"
 #endif
+
+#define RX_BUF_SIZE		(512)
+#define MSG_TIMEOUT		(-1)
 
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 static mdaq_uart_config_t uart[3]; 
 #endif 
 
-/* TODO: remove this function */ 
-static int recv_data_size; 
-static int send_data_size; 
-static int blocking_operation; 
-static int uart_timeout; 
 
 void UARTConfig( unsigned char module, unsigned char baud_rate, unsigned char data_bits, unsigned char parity, unsigned char stop_bits, unsigned char flow_control)
 {
@@ -64,40 +65,96 @@ void UARTConfig( unsigned char module, unsigned char baud_rate, unsigned char da
 		return; 
 #endif
 }
-/* TODO: remove this function */ 
-void UARTSendInit( unsigned char module, unsigned short data_size )
+
+void UARTSend( unsigned char module, unsigned char *data, unsigned int size )
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-	send_data_size = data_size;  
+	mdaq_uart_write(module, (void *)data, size); 
 #endif
 }
 
-void UARTSend( unsigned char module, unsigned char *data )
-{
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-	mdaq_uart_write(module, (void *)data, send_data_size); 
-#endif
-}
 
-/* TODO: remove this function */ 
-void UARTRecvInit( unsigned char module, unsigned short data_size, unsigned char blocking, unsigned short timeout )
-{
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-	recv_data_size = data_size; 
-	blocking_operation = blocking; 
-	uart_timeout = timeout; 
-#endif
-}
-
-void UARTRecv( unsigned char module, unsigned char *data, int *status )
+void UARTRecv( unsigned char module, unsigned char *data, int *status, unsigned int size, unsigned char blocking, unsigned int timeout, unsigned int msg_header, unsigned char use_msg_header )
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 
-	int result = mdaq_uart_read(module, (void *)data, recv_data_size, blocking_operation ? uart_timeout : 0); 
-	if (blocking_operation)
+	int data_idx = 0;
+	int use_message_header = 1;
+
+	static unsigned char rx_buffer[RX_BUF_SIZE + 4]; /* 4 bytes for header */
+	static int rx_buf_idx = 0;
+	static int msg_header_at = 0; 
+
+	int result = mdaq_uart_read(module, rx_buffer + rx_buf_idx,
+					size + ( sizeof(msg_header) - rx_buf_idx) , blocking ? timeout : 0);
+
+	if ( use_msg_header )
+	{
+		if ( result > 0 ) 
+		{
+			if(rx_buf_idx && !msg_header_at)
+			{
+				if ( rx_buf_idx + result >= size )
+				{
+					memcpy(data, rx_buffer, size);
+					*status = size;
+					rx_buf_idx = 0;
+				}
+				else
+				{
+					rx_buf_idx += result;
+				}
+			}
+			else
+			{
+				for ( data_idx = 0; data_idx < result; data_idx++ )
+				{
+					if ( rx_buffer[data_idx + rx_buf_idx] == *(((unsigned char *)(&msg_header)) + msg_header_at) )
+							msg_header_at++;
+					else
+							msg_header_at = 0;
+
+					if (msg_header_at == sizeof(msg_header))
+					{
+							data_idx++;
+							if( size ==  rx_buf_idx + result - data_idx)
+							{
+								memcpy(data, rx_buffer + rx_buf_idx + data_idx,
+												(result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
+
+								*status = size;
+								rx_buf_idx = 0;
+							}
+							else
+							{
+								memmove(rx_buffer, rx_buffer + rx_buf_idx + data_idx,
+												(result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
+
+								rx_buf_idx = result - data_idx;
+								*status = MSG_TIMEOUT;
+							}
+
+							msg_header_at = 0;
+							break;
+					}
+				}
+				if ( data_idx == result && msg_header_at < sizeof(msg_header))
+					*status = -1;
+			}
+		}
+		else
+		{
+			*status = result;
+		}
+	}
+	else
+	{
+		if (blocking)
 			*status = result; 
-	else 
+		else 
 			*status = result > 0 ? result : 0; 
+	}
+
 #endif
 }
 

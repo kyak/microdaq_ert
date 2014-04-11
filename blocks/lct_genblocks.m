@@ -201,8 +201,7 @@ MDAQUARTSEND.HeaderFiles = {'mdaquart.h'};
 MDAQUARTSEND.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
 MDAQUARTSEND.IncPaths = {'mdaq'};
 MDAQUARTSEND.SrcPaths = {'mdaq'};
-MDAQUARTSEND.StartFcnSpec = 'UARTSendInit(uint8 p1, uint16 p2)';
-MDAQUARTSEND.OutputFcnSpec = 'UARTSend(uint8 p1, uint8 u1[p2])';
+MDAQUARTSEND.OutputFcnSpec = 'UARTSend(uint8 p1, uint8 u1[p2], uint8 p2)';
 MDAQUARTSEND.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQUARTSEND.Options.supportsMultipleExecInstances = true;
@@ -215,8 +214,7 @@ MDAQUARTRECV.HeaderFiles = {'mdaquart.h'};
 MDAQUARTRECV.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
 MDAQUARTRECV.IncPaths = {'mdaq'};
 MDAQUARTRECV.SrcPaths = {'mdaq'};
-MDAQUARTRECV.StartFcnSpec = 'UARTRecvInit(uint8 p1, uint8 p2, uint8 p3, uint16 p4)';
-MDAQUARTRECV.OutputFcnSpec = 'UARTRecv(uint8 p1, uint8 y1[p2], int32 y2[1])';
+MDAQUARTRECV.OutputFcnSpec = 'UARTRecv(uint8 p1, uint8 y1[p2], int32 y2[1], uint8 p2, uint8 p3, uint8 p4, uint32 p5, uint8 p6)';
 MDAQUARTRECV.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQUARTRECV.Options.supportsMultipleExecInstances = true;
