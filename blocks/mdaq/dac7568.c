@@ -126,6 +126,7 @@ static void dac7568_write_cmd(uint32_t cmd)
 
 /* TODO: move to mdaq_aout.c */
 /* TODO: do the dac calibration in a proper way */
+#if 0 
 static uint16_t dac7568_calibrate_data(uint8_t ch, uint16_t data)
 {
 
@@ -144,13 +145,13 @@ static uint16_t dac7568_calibrate_data(uint8_t ch, uint16_t data)
 
 	return data;
 }
-
+#endif 
 static int dac7568_write(uint32_t cmd, uint8_t ch, uint16_t data)
 {
 	dac7568_en();
 
 	/* TODO:  */
-	data = dac7568_calibrate_data(ch, data);
+	// data = dac7568_calibrate_data(ch, data);
 
 	switch(cmd)
 	{
