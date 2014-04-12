@@ -86,9 +86,8 @@ int mdaq_rpc_exec( mdaq_rpc_t *call, uint32_t timeout, void *data, uint32_t len,
 	while( !call->sem1 )
 		memcpy((void *)call, (void*)rpc_node, sizeof(mdaq_rpc_t));
 
-	/* TODO: handle result call.result */
-	if (read)
-		memcpy((void *)data, (void *)rpc_buffer, len);
+	if (read && call->result > 0 && call->result <= len )
+		memcpy((void *)data, (void *)rpc_buffer, call->result);
 
 	return 0;
 
