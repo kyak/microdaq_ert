@@ -9,13 +9,57 @@
 
 #include <stdint.h>
 #include <string.h>
+
+#include "hardware.h"
 #include "mdaq_rpc.h"
 #include "mdaq_uart.h"
+
+#define PINMUX_8	(8)
+#define PINMUX_11	(11)
+
+#define UART0_RX_NIBBLE	(3)
+#define UART0_TX_NIBBLE	(4)
+
+#define UART1_RX_NIBBLE	(2)
+#define UART1_TX_NIBBLE	(3)
+
+static void uart_set_pinmux(int port)
+{
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+	uint32_t mux_conf = 0;
+	volatile uint32_t *mux_addr = (uint32_t *)(SYS_CFG_BASE + 0x120);
+
+	if(port == 0) 
+	{
+		mux_addr += PINMUX_8;
+		mux_conf = *mux_addr;
+		mux_conf &= ~(0xf << (UART0_RX_NIBBLE * 4));
+		mux_conf |= 0x1 << (UART0_RX_NIBBLE * 4);
+		mux_conf &= ~(0xf << (UART0_TX_NIBBLE * 4));
+		mux_conf |= 0x1 << (UART0_TX_NIBBLE * 4);
+		*mux_addr = mux_conf;
+	}
+
+	else if(port == 1)
+	{
+		mux_addr = (uint32_t *)(SYS_CFG_BASE + 0x120);
+		mux_addr += PINMUX_11;
+		mux_conf = *mux_addr;
+		mux_conf &= ~(0xf << (UART1_RX_NIBBLE * 4));
+		mux_conf |= 0x1 << (UART1_RX_NIBBLE * 4);
+		mux_conf &= ~(0xf << (UART1_TX_NIBBLE * 4));
+		mux_conf |= 0x1 << (UART1_TX_NIBBLE * 4);
+		*mux_addr = mux_conf;
+	}
+#endif
+}
 
 int mdaq_uart_open(int port_num)
 {
 	int result = -1;
 	mdaq_rpc_t call;
+
+	uart_set_pinmux(port_num);
 
 	memset((void *)&call, 0x0, sizeof(mdaq_rpc_t));
 	call.func 		 = MDAQUART_OPEN;
@@ -132,3 +176,4 @@ int mdaq_uart_init( void )
 	mdaq_rpc_init();
 	return 0;
 }
+
