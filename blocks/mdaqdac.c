@@ -41,14 +41,26 @@ void DACStep(double *dac_data, unsigned char channel_count)
 void DACTerminate(float *dac_data_term, unsigned char channel_count, unsigned short term_all_ch)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-	float voltage_zero[] = {0, 0, 0, 0, 0};
+	int count; 
+	float term_voltage[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	unsigned char ch_config[] = {0, 1, 2, 3, 4, 5, 6, 7};
-	mdaq_aout_write_multi(ch_config, sizeof(ch_config), voltage_zero, AOUT_SYNC );
-
+	
+	if ( term_all_ch )
+	{
+		if ( dac_data_term[0] != 0 )
+		{
+			for(count = 0; count < MDAQ_AOUT_MAX; count++ ) 
+			{
+				term_voltage[count] = dac_data_term[0]; 
+			}
+		}
+		mdaq_aout_write_multi(ch_config, sizeof(ch_config), term_voltage, AOUT_SYNC );
+	}
+	else
+	{
+		mdaq_aout_write_multi(ch_config, channel_count, dac_data_term, AOUT_SYNC );
+	}
 	return; 
 #endif
 }
-
-
-
 
