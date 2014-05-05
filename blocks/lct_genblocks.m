@@ -12,7 +12,6 @@ MDAQLED.OutputFcnSpec = 'mdaqled_set(uint32 p1, uint8 u1)';
 MDAQLED.Options.supportsMultipleExecInstances = true;
 
 %% ADC
-% Populate legacy_code structure with information
 MDAQADC = legacy_code('initialize');
 MDAQADC.SFunctionName = 'sfun_MDAQADC';
 MDAQADC.HeaderFiles = {'mdaqadc.h'};
@@ -26,7 +25,6 @@ MDAQADC.SampleTime = 'parameterized';
 MDAQADC.Options.supportsMultipleExecInstances = true;
 
 %% DAC
-% Populate legacy_code structure with information
 MDAQDAC = legacy_code('initialize');
 MDAQDAC.SFunctionName = 'sfun_MDAQDAC';
 MDAQDAC.HeaderFiles = {'mdaqdac.h'};
@@ -41,7 +39,6 @@ MDAQDAC.SampleTime = 'parameterized';
 MDAQDAC.Options.supportsMultipleExecInstances = true;
 
 %% QEP
-% Populate legacy_code structure with information
 MDAQQEP = legacy_code('initialize');
 MDAQQEP.SFunctionName = 'sfun_MDAQQEP';
 MDAQQEP.HeaderFiles = {'mdaqenc.h'};
@@ -55,7 +52,6 @@ MDAQQEP.SampleTime = 'parameterized';
 MDAQQEP.Options.supportsMultipleExecInstances = true;
 
 %% Encoder
-% Populate legacy_code structure with information
 MDAQENC = legacy_code('initialize');
 MDAQENC.SFunctionName = 'sfun_MDAQENC';
 MDAQENC.HeaderFiles = {'mdaqenc.h'};
@@ -69,7 +65,6 @@ MDAQENC.SampleTime = 'parameterized';
 MDAQENC.Options.supportsMultipleExecInstances = true;
 
 % PRU REG GET
-% Populate legacy_code structure with information
 MDAQPRUREGSET = legacy_code('initialize');
 MDAQPRUREGSET.SFunctionName = 'sfun_MDAQPRUREGSET';
 MDAQPRUREGSET.SourceFiles = {'mdaqpru.c','pru.c'};
@@ -82,7 +77,6 @@ MDAQPRUREGSET.SampleTime = 'parameterized';
 MDAQPRUREGSET.Options.supportsMultipleExecInstances = true;
 
 % PRU REG SET
-% Populate legacy_code structure with information
 MDAQPRUREGGET = legacy_code('initialize');
 MDAQPRUREGGET.SFunctionName = 'sfun_MDAQPRUREGGET';
 MDAQPRUREGGET.SourceFiles = {'mdaqpru.c','pru.c'};
@@ -95,10 +89,8 @@ MDAQPRUREGGET.SampleTime = 'parameterized';
 MDAQPRUREGGET.Options.supportsMultipleExecInstances = true;
 
 % MEM Write
-% Populate legacy_code structure with information
 MDAQMEMWR = legacy_code('initialize');
 MDAQMEMWR.SFunctionName = 'sfun_MDAQMEMRW';
-% MDAQMEMWR.HeaderFiles = {'mdaqenc.h'};
 MDAQMEMWR.SourceFiles = {'mdaqmemwr.c'};
 MDAQMEMWR.IncPaths = {'mdaq'};
 MDAQMEMWR.SrcPaths = {'mdaq'};
@@ -109,7 +101,6 @@ MDAQMEMWR.SampleTime = 'parameterized';
 MDAQMEMWR.Options.supportsMultipleExecInstances = true;
 
 %% MEM Read
-% Populate legacy_code structure with information
 MDAQMEMRD = legacy_code('initialize');
 MDAQMEMRD.SFunctionName = 'sfun_MDAQMEMRD';
 % MDAQMEMWR.HeaderFiles = {'mdaqenc.h'};
@@ -123,7 +114,6 @@ MDAQMEMRD.SampleTime = 'parameterized';
 MDAQMEMRD.Options.supportsMultipleExecInstances = true;
 
 %% MOTOR
-% Populate legacy_code structure with information
 MDAQMOTOR = legacy_code('initialize');
 MDAQMOTOR.SFunctionName = 'sfun_MDAQMOTOR';
 MDAQMOTOR.HeaderFiles = {'mdaqmotor.h'};
@@ -138,7 +128,6 @@ MDAQMOTOR.SampleTime = 'parameterized';
 MDAQMOTOR.Options.supportsMultipleExecInstances = true;
 
 % Digital IO set 
-% Populate legacy_code structure with information
 MDAQDIOSET = legacy_code('initialize');
 MDAQDIOSET.SFunctionName = 'sfun_MDAQDIOSET';
 MDAQDIOSET.HeaderFiles = {'mdaqdio.h'};
@@ -153,7 +142,6 @@ MDAQDIOSET.SampleTime = 'parameterized';
 MDAQDIOSET.Options.supportsMultipleExecInstances = true;
 
 % Digital IO get 
-% Populate legacy_code structure with information
 MDAQDIOGET = legacy_code('initialize');
 MDAQDIOGET.SFunctionName = 'sfun_MDAQDIOGET';
 MDAQDIOGET.HeaderFiles = {'mdaqdio.h'};
@@ -167,7 +155,6 @@ MDAQDIOGET.SampleTime = 'parameterized';
 MDAQDIOGET.Options.supportsMultipleExecInstances = true;
 
 % Function key 
-% Populate legacy_code structure with information
 MDAQFNCKEY = legacy_code('initialize');
 MDAQFNCKEY.SFunctionName = 'sfun_MDAQFNCKEY';
 MDAQFNCKEY.HeaderFiles = {'mdaqdio.h'};
@@ -181,7 +168,6 @@ MDAQFNCKEY.SampleTime = 'parameterized';
 MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
 
 % UART Config 
-% Populate legacy_code structure with information
 MDAQUARTCONF = legacy_code('initialize');
 MDAQUARTCONF.SFunctionName = 'sfun_MDAQUARTCONF';
 MDAQUARTCONF.HeaderFiles = {'mdaquart.h'};
@@ -194,7 +180,6 @@ MDAQUARTCONF.StartFcnSpec = 'UARTConfig(uint8 p1, uint8 p2, uint8 p3, uint8 p4, 
 MDAQUARTCONF.Options.supportsMultipleExecInstances = true;
 
 % UART Send 
-% Populate legacy_code structure with information
 MDAQUARTSEND = legacy_code('initialize');
 MDAQUARTSEND.SFunctionName = 'sfun_MDAQUARTSEND';
 MDAQUARTSEND.HeaderFiles = {'mdaquart.h'};
@@ -207,7 +192,6 @@ MDAQUARTSEND.SampleTime = 'parameterized';
 MDAQUARTSEND.Options.supportsMultipleExecInstances = true;
 
 % UART Receive 
-% Populate legacy_code structure with information
 MDAQUARTRECV = legacy_code('initialize');
 MDAQUARTRECV.SFunctionName = 'sfun_MDAQUARTRECV';
 MDAQUARTRECV.HeaderFiles = {'mdaquart.h'};
@@ -220,7 +204,6 @@ MDAQUARTRECV.SampleTime = 'parameterized';
 MDAQUARTRECV.Options.supportsMultipleExecInstances = true;
 
 % PWM
-% Populate legacy_code structure with information
 MDAQPWM = legacy_code('initialize');
 MDAQPWM.SFunctionName = 'sfun_MDAQPWM';
 MDAQPWM.HeaderFiles = {'mdaqpwm.h'};
@@ -234,10 +217,23 @@ MDAQPWM.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQPWM.Options.supportsMultipleExecInstances = true;
 
+RCCONTROLLER = legacy_code('initialize');
+RCCONTROLLER.SFunctionName = 'sfun_RCCONTROLLER';
+RCCONTROLLER.HeaderFiles = {'rc_controller.h'};
+RCCONTROLLER.SourceFiles = {'rc_controller.c', 'utils.c','pru.c', 'mdaq_dio.c', 'gpio.c'};
+RCCONTROLLER.IncPaths = {'mdaq'};
+RCCONTROLLER.SrcPaths = {'mdaq'};
+RCCONTROLLER.StartFcnSpec = 'RCControllerInit(uint8 p1)';
+RCCONTROLLER.OutputFcnSpec = 'RCControllerStep(uint8 p1, double y1[1], double y2[1], double y3[1], double y4[1] )';
+RCCONTROLLER.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+RCCONTROLLER.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
        MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:);MDAQPWM];
+       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:)];
+
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
 legacy_code('generate_for_sim', def);
