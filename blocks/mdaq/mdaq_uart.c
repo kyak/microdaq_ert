@@ -134,6 +134,9 @@ int mdaq_uart_config(int port, mdaq_uart_config_t *c )
 	if (c->data_bits < 5 || c->data_bits > 8)
 		return -1;
 
+	if (c->parity < 0 || c->parity > 2)
+		return -1;
+
 	if (c->stop_bits < 1 || c->stop_bits > 2)
 		return -1;
 
