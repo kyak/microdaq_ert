@@ -427,7 +427,7 @@ int_T main(int_T argc, const char *argv[])
     Clock_Params_init(&clkParams);
     clkParams.period = 1;
     clkParams.startFlag = TRUE;
-    rt_task_handle = Clock_create(clk0Fxn, 0, &clkParams, NULL);
+    rt_task_handle = Clock_create(clk0Fxn, 10, &clkParams, NULL);
     
 //     rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
 //                              NUMST,
