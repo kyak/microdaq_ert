@@ -1,4 +1,4 @@
-function [ ] = microdaqBeforeMakeHook( modelName )
+function [ ] = microdaqBeforeMakeHook( modelName, buildOpts )
 
 % Check the model if a target_paths.mk should be created
 if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
@@ -31,5 +31,13 @@ if (strcmp(get_param(modelName,'SystemTargetFile')  ,'microdaq.tlc') && ...
     end
     fprintf(fid,'SAMPLE_TIME = %s\n',num2str(Ts));
     fclose(fid);
+    if buildOpts.codeWasUpToDate
+        % Perform hook actions for up to date model
+    else
+        % Perform hook actions for full code generation
+        % Force rebuild of static external mode main (ext_main.c)
+        if exist('ext_main.o','file')
+            delete('ext_main.o');
+        end
+    end
 end
- 
