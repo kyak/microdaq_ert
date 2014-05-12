@@ -143,8 +143,9 @@ extern void MODEL_TERMINATE(void);
  extern void MODEL_STEP(int_T tid);  /* multirate step function */
 #endif
 
-/* TODO: */
 Clock_Handle rt_task_handle;
+Void rt_task_function(UArg arg0);
+int_T rt_TermModel(void);
 
 /*==================================*
  * Global data local to this module *
@@ -186,6 +187,12 @@ static void rt_OneStep(void)
      * by an overrun or by the generated code.       *
      *************************************************/
     if (rtmGetErrorStatus(RT_MDL) != NULL) {
+	rt_TermModel(); 
+        return;
+    }
+
+    if (rtmGetStopRequested(RT_MDL)) {
+	rt_TermModel(); 
         return;
     }
 
@@ -353,28 +360,33 @@ void rt_InitModel(void)
  */
 int_T rt_TermModel(void)
 {
-    MODEL_TERMINATE();
-    
+    static int term = 0; 
+
+    /* prevent to call MODEL_TERMINATE more then once */ 
+    if ( !term ) 
     {
-        const char_T *errStatus = (const char_T *) (rtmGetErrorStatus(RT_MDL));
-        int_T i;
-        
-        if (errStatus != NULL && strcmp(errStatus, "Simulation finished")) {
-            (void)printf("%s\n", errStatus);
-            for (i = 0; i < NUMST; i++) {
-                if (OverrunFlags[i]) {
-                    (void)printf("ISR overrun - sampling rate too"
-                                 "fast for sample time index %d.\n", i);
+        term = 1; 
+        MODEL_TERMINATE();
+
+        {
+            const char_T *errStatus = (const char_T *) (rtmGetErrorStatus(RT_MDL));
+            int_T i;
+
+            if (errStatus != NULL && strcmp(errStatus, "Simulation finished")) {
+                (void)printf("%s\n", errStatus);
+                for (i = 0; i < NUMST; i++) {
+                    if (OverrunFlags[i]) {
+                        (void)printf("ISR overrun - sampling rate too"
+                                "fast for sample time index %d.\n", i);
+                    }
                 }
+                return(1);
             }
-            return(1);
         }
-    }
-    
+    } 
     return(0);
 }
 
-Void clk0Fxn(UArg arg0);
 /* Function: main =============================================================
  *
  * Abstract:
@@ -383,18 +395,9 @@ Void clk0Fxn(UArg arg0);
 int_T main(int_T argc, const char *argv[])
 {
     /* External mode */
-//     rtParseArgsForExtMode(argc, argv);
- 
-    /*******************************************
-     * warn if the model will run indefinitely *
-     *******************************************/
-#if MAT_FILE==0 && EXT_MODE==0
-    printf("warning: the simulation will run with no stop time; "
-           "to change this behavior select the 'MAT-file logging' option\n");
-    fflush(NULL);
-#endif
-
-    (void)printf("\n** starting the model **\n");
+    Clock_Params clkParams;
+    Timer_Params user_sys_tick_params;
+    Timer_Handle user_sys_tick_timer;
 
     /************************
      * Initialize the model *
@@ -404,10 +407,6 @@ int_T main(int_T argc, const char *argv[])
     /* External mode */
     rtSetTFinalForExtMode(&rtmGetTFinal(RT_MDL));
     rtExtModeCheckInit(NUMST);
-    Clock_Params clkParams;
-
-    Timer_Params user_sys_tick_params;
-    Timer_Handle user_sys_tick_timer;
 
     /* Create timer for user system tick */
     Timer_Params_init(&user_sys_tick_params);
@@ -427,48 +426,17 @@ int_T main(int_T argc, const char *argv[])
     Clock_Params_init(&clkParams);
     clkParams.period = 1;
     clkParams.startFlag = TRUE;
-    rt_task_handle = Clock_create(clk0Fxn, 10, &clkParams, NULL);
+    rt_task_handle = Clock_create(rt_task_function, 10, &clkParams, NULL);
     
-//     rtExtModeWaitForStartPkt(rtmGetRTWExtModeInfo(RT_MDL),
-//                              NUMST,
-//                              (boolean_T *)&rtmGetStopRequested(RT_MDL));
-
-    /***********************************************************************
-     * Execute (step) the model.  You may also attach rtOneStep to an ISR, *
-     * in which case you replace the call to rtOneStep with a call to a    *
-     * background task.  Note that the generated code sets error status    *
-     * to "Simulation finished" when MatFileLogging is specified in TLC.   *
-     ***********************************************************************/
-//     while (rtmGetErrorStatus(RT_MDL) == NULL &&
-//            !rtmGetStopRequested(RT_MDL)) {
-// 
-// //         rtExtModePauseIfNeeded(rtmGetRTWExtModeInfo(RT_MDL),
-// //                                NUMST,
-// //                                (boolean_T *)&rtmGetStopRequested(RT_MDL));
-// 
-//         if (rtmGetStopRequested(RT_MDL)) break;
-// 
-//         /* external mode */
-//         rtExtModeOneStep(rtmGetRTWExtModeInfo(RT_MDL),
-//                          NUMST,
-//                          (boolean_T *)&rtmGetStopRequested(RT_MDL));
-//         
-//         rt_OneStep();
-//     }
     rtExtModeC6000Startup(rtmGetRTWExtModeInfo(RT_MDL),
                           NUMST,
                           (boolean_T *)&rtmGetStopRequested(RT_MDL));
     BIOS_start();
-
 }
 
-/*
- *  ======== clk0Fxn =======
- */
-Void clk0Fxn(UArg arg0)
+Void rt_task_function(UArg arg0)
 {
     /* Base rate */
     rt_OneStep();
 }
 
-/* [EOF] rt_main.c */
