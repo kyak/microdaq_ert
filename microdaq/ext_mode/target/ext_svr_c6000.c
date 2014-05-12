@@ -820,6 +820,7 @@ PUBLIC boolean_T ExtWaitForStartPkt(void)
 void UploadServerWork(int32_T upInfoIdx, int_T numSampTimes)
 {
     int_T         i;
+    int_T	  pkg_count = 0; 
     ExtBufMemList upList;
     boolean_T     error = EXT_NO_ERROR;
 
@@ -839,7 +840,7 @@ void UploadServerWork(int32_T upInfoIdx, int_T numSampTimes)
     while(upList.nActiveBufs > 0) {
         for (i=0; i<upList.nActiveBufs; i++) {
             const BufMem *bufMem = &upList.bufs[i];
-
+	    
             /*
              * We call SendPktDataToHost() instead of SendPktToHost() because
              * the packet header is combined with packet payload.  We do this
@@ -866,6 +867,10 @@ void UploadServerWork(int32_T upInfoIdx, int_T numSampTimes)
             }
             /* comfirm that the data was sent */
             UploadBufDataSent(upList.tids[i], upInfoIdx);
+	    if (pkg_count == 2)
+                    goto EXIT_POINT;
+
+	    pkg_count++; 
         }
         UploadBufGetData(&upList, upInfoIdx, numSampTimes);
     }
@@ -1187,15 +1192,12 @@ EXIT_POINT:
  *  when running as a low priority task.
  */
 #ifdef C6000_EXT_MODE
-//extern void TSK_prolog(TSK_Handle hTask);
 PUBLIC void rt_PktServer(RTWExtModeInfo *ei,
                          int_T          numSampTimes,
                          boolean_T      *stopReq)
 {
-    //TSK_prolog( TSK_self() );
     for(;;) {
         rt_PktServerWork(ei,numSampTimes,stopReq); 
-        Task_yield(); 
     }
 }
 #endif
@@ -1209,7 +1211,6 @@ PUBLIC void rt_PktServer(RTWExtModeInfo *ei,
 #ifdef C6000_EXT_MODE
 PUBLIC void rt_UploadServer(int_T numSampTimes)
 {
-    //TSK_prolog( TSK_self() );
     for(;;) {
         rt_UploadServerWork(numSampTimes);
     }
@@ -1267,6 +1268,12 @@ PUBLIC boolean_T rt_ExtModeShutdown(int_T numSampTimes)
         connected = FALSE;
         modelStatus = TARGET_STATUS_WAITING_TO_START;        
     }
+
+    /* TODO: this delay prevents from cloasing TCP socket beafore 
+     * SendPktToHost(EXT_MODEL_SHUTDOWN, 0, NULL) call complite
+     */
+    volatile int cnt;
+    for (cnt = 0; cnt < 2000000; cnt++);
 
     ExtShutDown(extUD);
     ExtUserDataDestroy(extUD);
