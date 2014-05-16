@@ -9,6 +9,7 @@ CFLAGS = -mv6740 --abi=eabi --include_path="$(CompilerRoot)/include" \
 
 CFLAGS += $(EXT_CC_OPTS) $(OPTS)
 CDEBUG = -g
+CFLAGS_OPT= -O2
 CCOUTPUTFLAG = --output_file=
 
 CXX      =

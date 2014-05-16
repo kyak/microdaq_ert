@@ -49,6 +49,14 @@
   rtwoptions(4).tooltip        = ['MicroDAQ will wait for Simulink user to connect and start Real-Time execution in External Mode'];
   rtwoptions(4).callback       = ''; 
 
+  rtwoptions(5).prompt         = 'Debug build';
+  rtwoptions(5).type           = 'Checkbox';
+  rtwoptions(5).default        = 'off';
+  rtwoptions(5).tlcvariable    = 'DebugBuildModeM';
+  rtwoptions(5).makevariable   = 'DEBUG_BUILD_MODE';
+  rtwoptions(5).tooltip        = ['Build model with debug'];
+  rtwoptions(5).callback       = '';
+
   rtwgensettings.DerivedFrom = 'ert.tlc';
   rtwgensettings.BuildDirSuffix = '_mdaq';
   rtwgensettings.Version = '1';

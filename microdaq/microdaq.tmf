@@ -11,7 +11,7 @@ MICRODAQ_DOWNLOAD   = |>MICRODAQ_DOWNLOAD<|
 ON_TARGET_WAIT_FOR_STARTM   = |>ON_TARGET_WAIT_FOR_STARTM<|
 
 # Enable debugging
-DEBUG_BUILD         = 1
+DEBUG_BUILD         = |>DEBUG_BUILD_MODE<|
 
 #---------------------- Tokens expanded by make_rtw ----------------------------
 MODEL                   = |>MODEL_NAME<|
@@ -109,6 +109,9 @@ ifeq ($(DEBUG_BUILD),1)
 CFLAGS += $(CDEBUG)
 CXXFLAGS += $(CXXDEBUG)
 LDFLAGS += $(LDDEBUG)
+else
+CFLAGS += $(CFLAGS_OPT)
+CXXFLAGS += $(CFLAGS_OPT)
 endif
 
 #----------------------------- External mode -----------------------------------
