@@ -38,6 +38,8 @@ You should be good to go.
 - Standalone execution on target (driven by SYS/BIOS timer)
 - Execution in PIL mode
 - External Mode support
+- PIL mode profiling
+
 - Simulink library blocks for:
         
         * ADC
@@ -59,4 +61,3 @@ You should be good to go.
         * File operations
  
 - More documentation
-- PIL mode profiling

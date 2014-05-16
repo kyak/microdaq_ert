@@ -78,8 +78,14 @@ classdef ConnectivityConfig < rtw.connectivity.Config
             
             % Register a hardware-specific timer. Registering the timer
             % enables the code execution profiling feature.
-            %timer = microdaq.Timer;
-            %this.setTimer(timer);
+            if verLessThan('matlab', '8.3')
+                % For releases prior to R2014a, use coder.profile.Timer class
+                timer = microdaq.Timer;
+                this.setTimer(timer)
+            else
+                % Otherwise, use microdaq_timer.m code replacement library
+                this.setTimer(microdaq_timer)
+            end
             
         end
     end
