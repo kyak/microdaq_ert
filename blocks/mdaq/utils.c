@@ -32,6 +32,11 @@ void delay_us( uint32_t us)
 	delay_accurate(us * 182);
 }
 
+void delay2(uint32_t delay)
+{
+	volatile cnt; 
+	for(cnt = 0; cnt < delay; cnt++); 
+}
 
 uint8_t raw_read8(uint32_t addr)
 {
@@ -47,8 +52,6 @@ uint32_t raw_read32(uint32_t addr)
 {
 	return *(uint32_t *)(addr);
 }
-
-
 
 void raw_write8(uint8_t data, uint32_t addr)
 {

@@ -15,6 +15,7 @@
 
 void delay_accurate (uint32_t n);
 void delay_us( uint32_t us);
+void delay2( uint32_t delay);
 
 uint8_t raw_read8(uint32_t addr);
 uint16_t raw_read16(uint32_t addr);

@@ -18,7 +18,7 @@
 #define DAC_FULL_SCALE			(2)
 
 void dac7568_init(uint8_t mode, uint8_t init_state);
-void dac7568_write_data(uint8_t ch, float value, uint8_t mode);
-int dac7568_write_multi(uint8_t ch[], uint8_t ch_count, uint16_t data[], uint32_t mode);
+void dac7568_write_data(uint8_t ch, float value);
+int dac7568_write_multi(uint8_t ch[], uint8_t ch_count, uint16_t data[]);
 
 #endif /* DAC7568_H */
