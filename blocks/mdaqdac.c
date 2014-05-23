@@ -1,23 +1,16 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 #include "mdaq_aout.h"
-static unsigned char aout_channels[MDAQ_AOUT_MAX]; 
 #endif
-
 
 void DACInit( unsigned char converter, unsigned char *channels, unsigned char channel_count, unsigned char update_mode, unsigned char update_mode_tirg )
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 	mdaq_aout_init(converter, 1 << update_mode);
-
-	if ( channel_count > MDAQ_AOUT_MAX )
-		channel_count = MDAQ_AOUT_MAX; 
-
-	memcpy((void *)aout_channels, (void *)channels, channel_count); 
 	return; 
 #endif
 }
 
-void DACStep(double *dac_data, unsigned char channel_count)
+void DACStep(double *dac_data, unsigned char *channels, unsigned char channel_count)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
 
@@ -31,7 +24,7 @@ void DACStep(double *dac_data, unsigned char channel_count)
 	for( count = 0; count < channel_count; count++)
 		data[count] = dac_data[count]; 
 
-	mdaq_aout_write_multi( aout_channels, channel_count, data);
+	mdaq_aout_write_multi(channels, channel_count, data);
 	
 	return;
 }
