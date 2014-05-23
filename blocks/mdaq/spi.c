@@ -114,10 +114,10 @@ int spi_xfer(uint8_t bitlen, const void *dout,
 		void *din, uint32_t flags)
 {
 	static unsigned int data1_reg_val;
-	volatile unsigned int	len;
-	volatile int		i;
-	volatile const uint16_t	*txp = dout;
-	volatile uint16_t		*rxp = din;
+	unsigned int	len;
+	int		i;
+	const uint16_t	*txp = dout;
+	uint16_t	*rxp = din;
 
 	len = bitlen / 16;
 
@@ -145,15 +145,17 @@ int spi_xfer(uint8_t bitlen, const void *dout,
 			SPI_SPIDAT1 = data1_reg_val;
 		}
 
-
 		/* read the data - wait for data availability */
-		while ( SPI_SPIBUF & ( 0x80000000 ) );
+		if ( rxp != NULL )
+		{
+			while ( SPI_SPIBUF & ( 0x80000000 ) );
 
-		if(rxp) {
-			*rxp = SPI_SPIBUF & 0xFFFF;
-			rxp++;
-		} else {
-			SPI_SPIBUF;
+			if(rxp) {
+				*rxp = SPI_SPIBUF & 0xFFFF;
+				rxp++;
+			} else {
+				SPI_SPIBUF;
+			}
 		}
 	}
 	return 0;
