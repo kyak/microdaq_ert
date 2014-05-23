@@ -212,11 +212,11 @@ int ads8568_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
 
     if ( ch > 8 )
     {
-        cs = ADC_CS1;
+        cs = ADC_CS2;
         ch -= 8;
     }
     else
-        cs = ADC_CS2;
+        cs = ADC_CS1;
 
     while(GPIO_getInput(ADC_BUSY));
     /* conversion end */  
@@ -272,7 +272,7 @@ int ads8568_scan_ch( uint16_t *data, uint8_t *ch, uint8_t ch_count,
 
     /* Set CS to active*/
     GPIO_setOutput(ADC_CS2, GPIO_LOW);
-    for(ch_index = 0; ch_index < ch_max; ch_index++)
+    for(ch_index = 0; ch_index <= ch_max; ch_index++)
     {
         if ( ch_index == 8 )
         {
