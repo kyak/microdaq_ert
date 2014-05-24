@@ -36,7 +36,6 @@ typedef struct mdaq_aout_config_
 
 int mdaq_aout_init( uint8_t converter,  uint8_t mode);
 int mdaq_aout_write(uint8_t ch, float data );
-int mdaq_aout_write_multi( uint8_t ch[], uint8_t ch_count,
-		const float *value, uint32_t mode);
+int mdaq_aout_write_multi( uint8_t ch[], uint8_t ch_count, const float *value);
 
 #endif /* MDAQ_AOUT_H */

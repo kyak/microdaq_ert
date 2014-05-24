@@ -94,18 +94,18 @@ int mdaq_aout_write(uint8_t ch, float data )
 	float voltage_step = mdaq_dac.hi_range - mdaq_dac.low_range / (float)digital_range;
 	float offset = (mdaq_dac.low_range < 0) ? -mdaq_dac.low_range : 0;
 
-	dac7568_write_data(ch, (uint16_t)((offset + data) * voltage_step), AOUT_ASYNC);
+	dac7568_write_data(ch, (uint16_t)((offset + data) * voltage_step));
 
 	return 0;
 }
 
 int mdaq_aout_write_multi( uint8_t ch[], uint8_t ch_count,
-		const float *value, uint32_t mode)
+		const float *value)
 {
 	uint16_t buf[MDAQ_AOUT_MAX];
 
 	calc_dac_data(value, buf, ch_count);
-	dac7568_write_multi(ch, ch_count, buf, mode);
+	dac7568_write_multi(ch, ch_count, buf);
 
 	return 0;
 }
