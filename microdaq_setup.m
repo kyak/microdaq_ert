@@ -1,5 +1,6 @@
 function microdaq_setup()
 
+cd microdaq;
 curpath = pwd;
 tgtpath = curpath(1:end-length('/microdaq'));
 addpath(fullfile(tgtpath, 'microdaq'));
