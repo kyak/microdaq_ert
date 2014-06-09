@@ -10,7 +10,7 @@
  #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT) 
 #include <string.h>
 
-#include "mdaq_ain_adc.h"
+#include "ain_adc.h"
 #include "mdaq_ain.h"
 
 struct mdaq_adc

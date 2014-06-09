@@ -15,7 +15,7 @@
 #include "hardware.h"
 #include "utils.h"
 
-#include "mdaq_rpc.h"
+#include "rpc.h"
 #include "mdaq_net.h"
 
 

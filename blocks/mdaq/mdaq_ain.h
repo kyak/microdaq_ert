@@ -12,8 +12,8 @@
 #define MDAQ_AIN_H
 
 #include <stdint.h>
-#include "mdaq_trig.h"
-#include "mdaq_ain_cap.h"
+#include "trig.h"
+#include "ain_cap.h"
 
 #define MDAQ_AIN_MAX		(16)
 

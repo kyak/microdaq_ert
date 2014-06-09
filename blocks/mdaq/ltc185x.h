@@ -10,7 +10,7 @@
 #ifndef _LTC185X_
 #define _LTC185X_
 #include <stdint.h> 
-#include "mdaq_ain_cap.h"
+#include "ain_cap.h"
 
 #define LTC185X_CH_MAX      (8)
 

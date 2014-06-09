@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "hardware.h"
-#include "mdaq_rpc.h"
+#include "rpc.h"
 #include "mdaq_uart.h"
 
 #define PINMUX_8	(8)

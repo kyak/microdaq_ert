@@ -35,7 +35,7 @@ static Semaphore_Handle rpc_done_sem;
 #endif
 
 #include <stdint.h>
-#include "mdaq_rpc.h"
+#include "rpc.h"
 
 static volatile mdaq_rpc_t *rpc_node;
 static volatile uint8_t *rpc_buffer;
