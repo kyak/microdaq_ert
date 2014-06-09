@@ -12,6 +12,7 @@
 
 #include "hardware.h"
 #include "rpc.h"
+
 #include "mdaq_uart.h"
 
 #define PINMUX_8	(8)
@@ -67,7 +68,7 @@ int mdaq_uart_open(int port_num)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, NULL, 0, 0);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, NULL, 0, 0);
 
 	return (result < 0) ? result : call.result;
 }
@@ -84,7 +85,7 @@ int mdaq_uart_write(int port, void *data, int len)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, data, len, 0);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, data, len, 0);
 
 	return (result < 0) ? result : call.result;
 }
@@ -102,7 +103,7 @@ int mdaq_uart_read(int port, void *data, int len, int timeout)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, data, len, 1);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, data, len, 1);
 
 	return (result < 0) ? result : call.result;
 }
@@ -118,7 +119,7 @@ int mdaq_uart_setspeed(int speed)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, NULL, 0, 0);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, NULL, 0, 0);
 
 	return (result < 0) ? result : call.result;
 }
@@ -152,7 +153,7 @@ int mdaq_uart_config(int port, mdaq_uart_config_t *c )
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, NULL, 0, 0);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, NULL, 0, 0);
 
 	return (result < 0) ? result : call.result;
 }
@@ -169,7 +170,7 @@ int mdaq_uart_close(int port)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, NULL, 0, 0);
+	result = mdaq_rpc_exec(1, &call, WAIT_FOREVER, NULL, 0, 0);
 
 	return (result < 0) ? result : call.result;
 }
