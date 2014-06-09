@@ -171,7 +171,7 @@ MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
 MDAQUARTCONF = legacy_code('initialize');
 MDAQUARTCONF.SFunctionName = 'sfun_MDAQUARTCONF';
 MDAQUARTCONF.HeaderFiles = {'mdaquart.h'};
-MDAQUARTCONF.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTCONF.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
 MDAQUARTCONF.IncPaths = {'mdaq'};
 MDAQUARTCONF.SrcPaths = {'mdaq'};
 MDAQUARTCONF.StartFcnSpec = 'UARTConfig(uint8 p1, uint8 p2, uint8 p3, uint8 p4, uint8 p5, uint8 p6)';
@@ -183,7 +183,7 @@ MDAQUARTCONF.Options.supportsMultipleExecInstances = true;
 MDAQUARTSEND = legacy_code('initialize');
 MDAQUARTSEND.SFunctionName = 'sfun_MDAQUARTSEND';
 MDAQUARTSEND.HeaderFiles = {'mdaquart.h'};
-MDAQUARTSEND.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTSEND.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
 MDAQUARTSEND.IncPaths = {'mdaq'};
 MDAQUARTSEND.SrcPaths = {'mdaq'};
 MDAQUARTSEND.OutputFcnSpec = 'UARTSend(uint8 p1, uint8 u1[p2], uint8 p2)';
@@ -195,7 +195,7 @@ MDAQUARTSEND.Options.supportsMultipleExecInstances = true;
 MDAQUARTRECV = legacy_code('initialize');
 MDAQUARTRECV.SFunctionName = 'sfun_MDAQUARTRECV';
 MDAQUARTRECV.HeaderFiles = {'mdaquart.h'};
-MDAQUARTRECV.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'mdaq_rpc.c', 'utils.c'};
+MDAQUARTRECV.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
 MDAQUARTRECV.IncPaths = {'mdaq'};
 MDAQUARTRECV.SrcPaths = {'mdaq'};
 MDAQUARTRECV.OutputFcnSpec = 'UARTRecv(uint8 p1, uint8 y1[p2], int32 y2[1], uint8 p2, uint8 p3, uint8 p4, uint32 p5, uint8 p6)';
@@ -229,10 +229,49 @@ RCCONTROLLER.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 RCCONTROLLER.Options.supportsMultipleExecInstances = true;
 
+TOFILE = legacy_code('initialize');
+TOFILE.SFunctionName = 'sfun_TOFILE';
+TOFILE.HeaderFiles = {'mdaqfile.h'};
+TOFILE.SourceFiles = {'mdaqfile.c', 'mdaq_file.c', 'rpc.c', 'utils.c'};
+TOFILE.IncPaths = {'mdaq'};
+TOFILE.SrcPaths = {'mdaq'};
+TOFILE.StartFcnSpec = 'ToFileInit(int8 p1[], uint8 p2, uint32 p3, uint8 p4, uint8 p5)';
+TOFILE.OutputFcnSpec = 'ToFileStep(double u1[], uint32 p3, uint8 p4, uint8 p5)';
+TOFILE.TerminateFcnSpec = 'ToFileTerminate()';
+TOFILE.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+TOFILE.Options.supportsMultipleExecInstances = true;
+
+FROMFILE = legacy_code('initialize');
+FROMFILE.SFunctionName = 'sfun_FROMFILE';
+FROMFILE.HeaderFiles = {'mdaqfile.h'};
+FROMFILE.SourceFiles = {'mdaqfile.c', 'mdaq_file.c', 'rpc.c', 'utils.c'};
+FROMFILE.IncPaths = {'mdaq'};
+FROMFILE.SrcPaths = {'mdaq'};
+FROMFILE.StartFcnSpec = 'FromFileInit(int8 p1[], uint8 p2, uint32 p3, uint8 p4, uint8 p5)';
+FROMFILE.OutputFcnSpec = 'FromFileStep(double y1[p4], uint32 p3, uint8 p4, uint8 p5)';
+FROMFILE.TerminateFcnSpec = 'FromFileTerminate()';
+FROMFILE.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+FROMFILE.Options.supportsMultipleExecInstances = true;
+
+OUTSTREAM = legacy_code('initialize');
+OUTSTREAM.SFunctionName = 'sfun_OUTSTREAM';
+OUTSTREAM.HeaderFiles = {'mdaqstream.h'};
+OUTSTREAM.SourceFiles = {'mdaqstream.c', 'mdaq_stream.c', 'utils.c'};
+OUTSTREAM.IncPaths = {'mdaq'};
+OUTSTREAM.SrcPaths = {'mdaq'};
+OUTSTREAM.StartFcnSpec = 'OutStreamInit(uint8 p1, uint8 p2)';
+OUTSTREAM.OutputFcnSpec = 'OutStreamStep(double u1[p2], uint8 p1, uint8 p2)';
+OUTSTREAM.TerminateFcnSpec = 'OutStreamTerminate(uint8 p1)';
+OUTSTREAM.SampleTime = 'parameterized';
+% Support calling from within For-Each subsystem
+OUTSTREAM.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
        MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:)];
+       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:)];
 
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
