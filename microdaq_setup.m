@@ -75,6 +75,7 @@ sl_refresh_customizations;
 rehash toolbox;
 disp('<strong>MicroDAQ Target setup is complete!</strong>');
 disp('Explore <a href="matlab:cd([getpref(''microdaq'',''TargetRoot''),''/../demos''])">demos</a> directory and access <a href="matlab:doc -classic">documentation</a>');
+cd([getpref('microdaq','TargetRoot'),'/../demos']);
 end
 
 function [CCSRoot, CompilerRoot, XDCRoot, BIOSRoot] = ccs_setup_paths()
