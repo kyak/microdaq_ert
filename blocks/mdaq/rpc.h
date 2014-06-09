@@ -15,6 +15,9 @@
 #define MDAQRPC_MEM_ADDR		(0x80010000)
 #define MDAQRPC_MEM_SIZE		(0x8000)
 
+#define MDAQRPC_MEM2_ADDR		(0x80018000)
+#define MDAQRPC_MEM2_SIZE		(0x8000)
+
 #define MDAQRPC_RPC_MAX_ARGS	(10)
 #define WAIT_FOREVER			(~0)
 #define MDAQRPC_BUF_SIZE		(0x8000)
@@ -57,7 +60,7 @@ typedef struct mdaq_rpc_
 	param_t				args[MDAQRPC_RPC_MAX_ARGS];
 }mdaq_rpc_t;
 
-int mdaq_rpc_exec( mdaq_rpc_t *call, uint32_t timeout, void *data, uint32_t len, int read );
+int mdaq_rpc_exec(uint8_t ch, mdaq_rpc_t *call, uint32_t timeout, void *data, uint32_t len, int read );
 void mdaq_rpc_init( void );
 
 #endif /* MDAQ_RPC_H_ */
