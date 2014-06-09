@@ -34,7 +34,7 @@ void delay_us( uint32_t us)
 
 void delay2(uint32_t delay)
 {
-	volatile cnt; 
+	volatile int cnt; 
 	for(cnt = 0; cnt < delay; cnt++); 
 }
 
