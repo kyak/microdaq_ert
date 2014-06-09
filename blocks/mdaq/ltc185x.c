@@ -31,20 +31,21 @@
 #define LTC185X_BUSY                	GP5_10
 #define LTC185X_EN                  	GP4_11
 
-#define ANALOG_EN			GP5_11
+#define ANALOG_EN						GP5_11
 
-#define LTC185X_SPI_FREQ		(15000000)
-#define LTC185X_SPI_POLARITY		(0)
-#define LTC185X_SPI_PHRASE		(1)
+#define LTC185X_SPI_FREQ				(10000000)
+#define LTC185X_SPI_POLARITY			(0)
+#define LTC185X_SPI_PHRASE				(1)
 
 static inline void ltc185x_en( void )
 {
     if (GPIO_getOutput(LTC185X_EN) != GPIO_LOW)
     {
-        GPIO_setOutput(LTC185X_EN, GPIO_LOW);
         spi_set_freq(LTC185X_SPI_FREQ);
+        GPIO_setOutput(LTC185X_EN, GPIO_LOW);
         spi_set_polarity(LTC185X_SPI_POLARITY);
         spi_set_phrase(LTC185X_SPI_PHRASE);
+        delay2(1);
     }
 }
 
@@ -74,9 +75,8 @@ static inline void ltc185x_start_conv( void )
 {
     /* High state on CONV_START should be min 40ns */
     GPIO_setOutput(LTC185X_CONV_START, GPIO_HIGH);  
-    delay2(1);
+    delay2(0);
     GPIO_setOutput(LTC185X_CONV_START, GPIO_LOW);
-
     while(!GPIO_getInput( LTC185X_BUSY ));
 } 
 
@@ -89,9 +89,7 @@ static int ltc185x_xfer(uint8_t cmd, uint16_t *data)
 
     ret = spi_xfer( 16, (void*)&tmp_cmd, data, SPI_XFER_END);
     if (ret)
-    {
         return -1;
-    }
 
     return 0;
 }
@@ -100,7 +98,7 @@ int ltc185x_init( void )
 {
     /* Configure SPI bus for analog */
     spi_setup_bus(LTC185X_SPI_FREQ, 
-            LTC185X_SPI_POLARITY, LTC185X_SPI_PHRASE);
+					LTC185X_SPI_POLARITY, LTC185X_SPI_PHRASE);
 
     /* Enable analog section */
     GPIO_setDir(ANALOG_EN,    GPIO_OUTPUT);
@@ -140,15 +138,43 @@ int ltc185x_read_ch( uint16_t *data, uint8_t ch, uint8_t range,
 int ltc185x_scan_ch( uint16_t *data, uint8_t *ch, uint8_t ch_count, 
         uint8_t range, uint8_t mode, uint8_t polarity )
 {
-    volatile int ch_index;
-    volatile uint8_t cmd;
+    int ch_index = 0;
+    uint8_t cmd;
+    uint16_t tmp; 
 
     if ( ch_count > LTC185X_CH_MAX || ch_count == 0 )
         return -1; 
 
-    for (ch_index = 0; ch_index < ch_count; ch_index++)
-        ltc185x_read_ch(&data[ch_index], ch[ch_index], range, mode, polarity);
+    /* if one channel to read use standard channel read function */
+    if ( ch_count == 1 )
+    {
+    	ltc185x_read_ch(data, *ch, range, mode, polarity);
+    	return 1;
+    }
 
+    /* enable ltc185x converter */
+    ltc185x_en();
+
+    /* prepare first command for converter */
+    cmd = ltc185x_create_cmd(ch[ch_index], range, mode, polarity);
+    ltc185x_xfer(cmd, &tmp);
+    ltc185x_start_conv();
+
+    ltc185x_xfer(cmd, &tmp);
+    ltc185x_start_conv();
+
+    for (; ch_index < ch_count; ch_index++)
+    {
+	    if ( ch_index + 1 < ch_count )
+		    cmd = ltc185x_create_cmd(ch[ch_index + 1], range, mode, polarity);
+
+	    /* read data from converter and start conversion */
+	    if ( ch_index < ch_count )
+	    {
+		    ltc185x_xfer(cmd, &data[ch_index]);
+		    ltc185x_start_conv();
+	    }
+    }
     return ch_index;
 }
 #endif 
