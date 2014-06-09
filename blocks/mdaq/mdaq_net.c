@@ -14,8 +14,8 @@
 
 #include "hardware.h"
 #include "utils.h"
-
 #include "rpc.h"
+
 #include "mdaq_net.h"
 
 
@@ -34,7 +34,7 @@ int mdaq_net_open(int port, int type, int protocol, int flags, int blocking)
 
 	call.result = -1;
 
-	result = mdaq_rpc_exec( &call, WAIT_FOREVER, NULL, 0, 0);
+	result = mdaq_rpc_exec(0, &call, WAIT_FOREVER, NULL, 0, 0);
 	return (result < 0) ? result : call.result;
 }
 
@@ -48,7 +48,7 @@ int mdaq_net_close(int fd)
 
 	call.result = -1;
 
-	mdaq_rpc_exec(&call, WAIT_FOREVER, NULL, 0, 0);
+	mdaq_rpc_exec(0, &call, WAIT_FOREVER, NULL, 0, 0);
 	return call.result;
 }
 
@@ -64,7 +64,7 @@ int mdaq_net_send(int sockfd, const void *buf, size_t len, int flags)
 
 	call.result = -1;
 
-	mdaq_rpc_exec( &call, WAIT_FOREVER, (void *)buf, len, 0);
+	mdaq_rpc_exec(0, &call, WAIT_FOREVER, (void *)buf, len, 0);
 
 	return call.result;
 }
@@ -81,7 +81,7 @@ int mdaq_net_recv(int sockfd, void *buf, size_t len, int flags)
 	call.args[1].i32 = len;
 	call.result = -1;
 
-	mdaq_rpc_exec( &call, WAIT_FOREVER, buf, len, 1);
+	mdaq_rpc_exec(0, &call, WAIT_FOREVER, buf, len, 1);
 
 	return call.result;
 }
