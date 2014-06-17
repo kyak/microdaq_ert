@@ -27,11 +27,11 @@ Download latest MicroDAQ firmware, unpack it, connect MicroDAQ with USB cable, c
 before you proceed! "docs/MicroDAQ Quick Start Guide.pdf" is a useful document that will guide you through this process.
 This step is not required, but it is strongly advised to get yourself familiar with some basic concepts.
 
-4) Make sure you have a working/supported host compiler (http://www.mathworks.com/support/compilers/R2013a/index.html) by running
+4) Make sure you have a working/supported host compiler (http://www.mathworks.com/support/compilers/index.html) by running
         
         mex -setup
 in MATLAB.
-Avoid using the lcc compiler which ships with MATLAB 32-bit for Windows. It is known to cause problems.
+Avoid using the lcc compiler which ships with MATLAB for Windows. It is known to cause problems.
 
 5) Extract this package somewhere. Make sure there are no spaces/non-ASCII characters in path (just in case).
 
