@@ -12,6 +12,9 @@ for multidomain simulation and Model-Based Design.
 Embedded Coder (http://www.mathworks.com/products/embedded-coder) allows you to
 generate C code and deploy your algorithms to target hardware.
 
+**Supported Matlab version:**
+This package will work with R2013a and newer Matlab releases. 
+
 **Installation:**
 
 1) Install latest MicroDAQ firmware from: https://github.com/embedded-solutions/microdaq-firmware/releases
