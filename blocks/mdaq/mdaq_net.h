@@ -77,10 +77,17 @@ enum protocol_type{
 #define MDAQNET_SYSBIOS		(1)
 
 int mdaq_net_init( void );
+
 int mdaq_net_open(int port, int type, int protocol, int flags, int blocking);
 int mdaq_net_close(int fd);
-
 int mdaq_net_recv(int fd, void *buf, size_t len, int flags);
 int mdaq_net_send(int fd, const void *buf, size_t len, int flags);
+
+/* TODO: one common API */
+int mdaq_net_open2(const char *ip_addr, int port, int type, int protocol, int flags, int timeout);
+int mdaq_net_close2(int fd);
+int mdaq_net_send2(int sockfd, const void *buf, size_t len, int flags);
+int mdaq_net_recv2(int sockfd, void *buf, size_t len, int flags);
+
 
 #endif /* MDAQNET_H_ */
