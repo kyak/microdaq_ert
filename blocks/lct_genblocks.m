@@ -268,10 +268,38 @@ OUTSTREAM.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 OUTSTREAM.Options.supportsMultipleExecInstances = true;
 
+%% TCP/UDP support
+% UDP Send
+MDAQUDPSEND = legacy_code('initialize');
+MDAQUDPSEND.SFunctionName = 'sfun_MDAQUDPSEND';
+MDAQUDPSEND.HeaderFiles = {'mdaqsocket.h'};
+MDAQUDPSEND.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQUDPSEND.IncPaths = {'mdaq'};
+MDAQUDPSEND.SrcPaths = {'mdaq'};
+MDAQUDPSEND.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
+MDAQUDPSEND.OutputFcnSpec = 'SocketSend(int8 p1[], int32 p2, uint8 u1[], uint32 p6)';
+MDAQUDPSEND.TerminateFcnSpec = 'SocketClose(int8 p1[], int32 p2)';
+MDAQUDPSEND.SampleTime = 'parameterized';
+MDAQUDPSEND.Options.supportsMultipleExecInstances = true;
+
+%%
+% UDP Receive
+MDAQUDPRECV = legacy_code('initialize');
+MDAQUDPRECV.SFunctionName = 'sfun_MDAQUDPRECV';
+MDAQUDPRECV.HeaderFiles = {'mdaqsocket.h'};
+MDAQUDPRECV.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQUDPRECV.IncPaths = {'mdaq'};
+MDAQUDPRECV.SrcPaths = {'mdaq'};
+MDAQUDPRECV.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
+MDAQUDPRECV.OutputFcnSpec = 'SocketRecv(int8 p1[], int32 p2, uint8 y1[p6], int32 y2[1], uint32 p6, uint8 p3)';
+MDAQUDPRECV.TerminateFcnSpec = 'SocketClose(int8 p1[], int32 p2)';
+MDAQUDPRECV.SampleTime = 'parameterized';
+MDAQUDPRECV.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
        MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:)];
+       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:);MDAQUDPSEND(:);MDAQUDPRECV(:)];
 
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation
