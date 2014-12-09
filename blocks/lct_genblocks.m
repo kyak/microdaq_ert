@@ -296,10 +296,39 @@ MDAQUDPRECV.TerminateFcnSpec = 'SocketClose(int8 p1[], int32 p2)';
 MDAQUDPRECV.SampleTime = 'parameterized';
 MDAQUDPRECV.Options.supportsMultipleExecInstances = true;
 
+%%
+% TCP Send
+MDAQTCPSEND = legacy_code('initialize');
+MDAQTCPSEND.SFunctionName = 'sfun_MDAQTCPSEND';
+MDAQTCPSEND.HeaderFiles = {'mdaqsocket.h'};
+MDAQTCPSEND.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQTCPSEND.IncPaths = {'mdaq'};
+MDAQTCPSEND.SrcPaths = {'mdaq'};
+MDAQTCPSEND.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
+MDAQTCPSEND.OutputFcnSpec = 'SocketSend(int8 p1[], int32 p2, uint8 u1[], uint32 p6)';
+MDAQTCPSEND.TerminateFcnSpec = 'SocketClose(int8 p1[], int32 p2)';
+MDAQTCPSEND.SampleTime = 'parameterized';
+MDAQTCPSEND.Options.supportsMultipleExecInstances = true;
+
+%%
+% TCP Receive
+MDAQTCPRECV = legacy_code('initialize');
+MDAQTCPRECV.SFunctionName = 'sfun_MDAQTCPRECV';
+MDAQTCPRECV.HeaderFiles = {'mdaqsocket.h'};
+MDAQTCPRECV.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQTCPRECV.IncPaths = {'mdaq'};
+MDAQTCPRECV.SrcPaths = {'mdaq'};
+MDAQTCPRECV.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
+MDAQTCPRECV.OutputFcnSpec = 'SocketRecv(int8 p1[], int32 p2, uint8 y1[p6], int32 y2[1], uint32 p6, uint8 p3)';
+MDAQTCPRECV.TerminateFcnSpec = 'SocketClose(int8 p1[], int32 p2)';
+MDAQTCPRECV.SampleTime = 'parameterized';
+MDAQTCPRECV.Options.supportsMultipleExecInstances = true;
+
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
        MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:);MDAQUDPSEND(:);MDAQUDPRECV(:)];
+       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:);MDAQUDPSEND(:);MDAQUDPRECV(:);...
+       MDAQTCPSEND(:);MDAQTCPRECV(:)];
 
 %% Legacy Code Tool
 % Generate, compile and link S-function for simulation

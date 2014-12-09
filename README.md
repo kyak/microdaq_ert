@@ -59,12 +59,13 @@ You should be good to go.
         * PRU - Real-time processing unit
         * PWM
         * File operations
+        * TCP/IP (client) and UDP Send/Receive
 
 **What this package would like to have:**
 
 - Simulink library blocks for:
 
-        * UDP  
-        * TCP
+        * TCP/IP (server) Send/Receive
+        * RAW Ethernet
  
 - More documentation
