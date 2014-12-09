@@ -13,7 +13,7 @@ function this = Timer
             
             % Configure source files required to access the timer
             timerSourceFile = fullfile(getpref('microdaq','TargetRoot'),...
-                'microdaq_timer.c');
+                'rtiostream','microdaq_timer.c');
                        
             this.setSourceFile(timerSourceFile);
             
