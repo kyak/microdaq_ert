@@ -68,6 +68,7 @@
 /**********************
  * External Variables *
  **********************/
+extern void rtExtModeC6000Cleanup(int_T numSampTimes);
 extern int_T           volatile startModel;
 extern TargetSimStatus volatile modelStatus;
 #ifdef C6000_EXT_MODE

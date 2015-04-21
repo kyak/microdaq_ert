@@ -1,36 +1,26 @@
-#include "mdaqled.h"
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+#include <string.h>
+#include "mdaq_dio.h"
+#endif 
 
-/* Initialize LEDs */
-void mdaqled_init(void)
-{
-#ifndef MATLAB_MEX_FILE
-#endif
-}
-
-/* Set LED status */
-/* led: 1/2 (D1/D2); state: 0/1 (on/off) */
 void mdaqled_set(unsigned char led, unsigned char state)
 {
-#ifndef MATLAB_MEX_FILE
+#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
     if (led == 1)
-        /* D1 */
         if (state == 1)
-            /* ON */
-            GPIO_setOutput(GP2_6, GPIO_LOW);
+            mdaq_dio_write(D1, 0);
         else
-            GPIO_setOutput(GP2_6, GPIO_HIGH);
+            mdaq_dio_write(D1, 1);
     else if (led == 2)
-        /* D2 */
         if (state == 1)
-            /* ON */
-            GPIO_setOutput(GP2_7, GPIO_LOW);
+            mdaq_dio_write(D2, 0);
         else
-            GPIO_setOutput(GP2_7, GPIO_HIGH);
+            mdaq_dio_write(D2, 1);
     else
     {
         /* Shouldn't get here, but switch off LEDs for good */
-        GPIO_setOutput(GP2_7, GPIO_HIGH);
-        GPIO_setOutput(GP2_6, GPIO_HIGH);
+        mdaq_dio_write(D1, 1);
+        mdaq_dio_write(D2, 1);
     }
 #endif
 }

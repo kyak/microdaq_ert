@@ -23,7 +23,8 @@ LDFLAGS = -mv6740 --abi=eabi --define=omapl137 \
           -z --stack_size=0x800 -m"$(MODEL).map" --heap_size=0x800 \
           -i"$(CompilerRoot)/lib" -i"$(CompilerRoot)/include" \
           --reread_libs --define=DSP_CORE=1 --warn_sections --rom_model \
-          -l"$(TargetRoot)/sysbios/configPkg/linker.cmd" -l"libc.a"
+          -l"$(TargetRoot)/sysbios/configPkg/linker.cmd" \
+          -l"$(TargetRoot)/../blocks/mdaq/microdaq.lib" -l"libc.a"
 
 LDFLAGS_EXTMODE =
 LDDEBUG =

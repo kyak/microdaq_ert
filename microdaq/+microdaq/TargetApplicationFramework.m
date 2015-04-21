@@ -26,9 +26,6 @@ classdef TargetApplicationFramework < rtw.pil.RtIOStreamApplicationFramework
 				fullfile(getpref('microdaq','TargetRoot'),'rtiostream'));
             buildInfo.addIncludePaths(...
                 fullfile(getpref('microdaq','TargetRoot'),'..','blocks','mdaq'));
-            buildInfo.addSourcePaths(...
-                fullfile(getpref('microdaq','TargetRoot'),'..','blocks','mdaq'));
-            buildInfo.addSourceFiles({'mdaq_net.c', 'rpc.c','utils.c'});
         end
     end
 end

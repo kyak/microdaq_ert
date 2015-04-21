@@ -1,9 +1,12 @@
 #ifndef __MDAQGPIO_H
 #define __MDAQGPIO_H
 
-#if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-#include "gpio.h"
-#endif
+
+void DIOConfig(unsigned char func1, unsigned char func2, 
+		unsigned char func3, unsigned char func4, 
+		unsigned char func5, unsigned char func6, 
+		unsigned char dir1, unsigned char dir2, 
+		unsigned char dir3, unsigned char dir4);
 
 void DIOInit(unsigned char pin, unsigned char dir, unsigned char init_value);
 void DIOSetStep(unsigned char pin, unsigned char value);

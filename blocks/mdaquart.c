@@ -1,9 +1,6 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-
 #include <string.h>
-
 #include "mdaq_uart.h"
-#include "mdaquart.h"
 #endif
 
 #define RX_BUF_SIZE     (512)
@@ -84,7 +81,7 @@ void UARTRecv( unsigned char module, unsigned char *data, int *status, unsigned 
     static int msg_header_at = 0; 
 
     int result = mdaq_uart_read(module, rx_buffer + rx_buf_idx,
-                    size + ( sizeof(msg_header) - rx_buf_idx) , blocking ? timeout : 0);
+            size + ( sizeof(msg_header) - rx_buf_idx) , blocking ? timeout : 0);
 
     if ( use_msg_header )
     {
@@ -108,32 +105,32 @@ void UARTRecv( unsigned char module, unsigned char *data, int *status, unsigned 
                 for ( data_idx = 0; data_idx < result; data_idx++ )
                 {
                     if ( rx_buffer[data_idx + rx_buf_idx] == *(((unsigned char *)(&msg_header)) + msg_header_at) )
-                            msg_header_at++;
+                        msg_header_at++;
                     else
-                            msg_header_at = 0;
+                        msg_header_at = 0;
 
                     if (msg_header_at == sizeof(msg_header))
                     {
-                            data_idx++;
-                            if( size ==  rx_buf_idx + result - data_idx)
-                            {
-                                memcpy(data, rx_buffer + rx_buf_idx + data_idx,
-                                                (result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
+                        data_idx++;
+                        if( size ==  rx_buf_idx + result - data_idx)
+                        {
+                            memcpy(data, rx_buffer + rx_buf_idx + data_idx,
+                                    (result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
 
-                                *status = size;
-                                rx_buf_idx = 0;
-                            }
-                            else
-                            {
-                                memmove(rx_buffer, rx_buffer + rx_buf_idx + data_idx,
-                                                (result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
+                            *status = size;
+                            rx_buf_idx = 0;
+                        }
+                        else
+                        {
+                            memmove(rx_buffer, rx_buffer + rx_buf_idx + data_idx,
+                                    (result - data_idx) > RX_BUF_SIZE ? RX_BUF_SIZE : result - data_idx);
 
-                                rx_buf_idx = result - data_idx;
-                                *status = MSG_TIMEOUT;
-                            }
+                            rx_buf_idx = result - data_idx;
+                            *status = MSG_TIMEOUT;
+                        }
 
-                            msg_header_at = 0;
-                            break;
+                        msg_header_at = 0;
+                        break;
                     }
                 }
                 if ( data_idx == result && msg_header_at < sizeof(msg_header))

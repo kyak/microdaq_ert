@@ -3,8 +3,8 @@ function lct_genblocks
 % Populate legacy_code structure with information
 MDAQLED = legacy_code('initialize');
 MDAQLED.SFunctionName = 'sfun_MDAQLED';
-MDAQLED.HeaderFiles = {'mdaqled.h'};
-MDAQLED.SourceFiles = {'mdaqled.c','gpio.c'};
+MDAQLED.HeaderFiles = {'mdaqled.h','mdaq_dio.h'};
+MDAQLED.SourceFiles = {'mdaqled.c'};
 MDAQLED.IncPaths = {'mdaq'};
 MDAQLED.SrcPaths = {'mdaq'};
 MDAQLED.OutputFcnSpec = 'mdaqled_set(uint32 p1, uint8 u1)';
@@ -14,8 +14,8 @@ MDAQLED.Options.supportsMultipleExecInstances = true;
 %% ADC
 MDAQADC = legacy_code('initialize');
 MDAQADC.SFunctionName = 'sfun_MDAQADC';
-MDAQADC.HeaderFiles = {'mdaqadc.h'};
-MDAQADC.SourceFiles = {'mdaqadc.c','mdaq_ain.c','ltc185x.c','ads8568.c','spi.c','gpio.c','utils.c'};
+MDAQADC.HeaderFiles = {'mdaqadc.h','mdaq_ai.h'};
+MDAQADC.SourceFiles = {'mdaqadc.c'};
 MDAQADC.IncPaths = {'mdaq'};
 MDAQADC.SrcPaths = {'mdaq'};
 MDAQADC.StartFcnSpec = 'ADCInit(uint8 p1, uint8 p2[], uint8 p3, uint8 p4, uint8 p5, uint8 p6)';
@@ -27,8 +27,8 @@ MDAQADC.Options.supportsMultipleExecInstances = true;
 %% DAC
 MDAQDAC = legacy_code('initialize');
 MDAQDAC.SFunctionName = 'sfun_MDAQDAC';
-MDAQDAC.HeaderFiles = {'mdaqdac.h'};
-MDAQDAC.SourceFiles = {'mdaqdac.c','mdaq_aout.c','dac7568.c','spi.c','gpio.c','utils.c'};
+MDAQDAC.HeaderFiles = {'mdaqdac.h','mdaq_ao.h'};
+MDAQDAC.SourceFiles = {'mdaqdac.c'};
 MDAQDAC.IncPaths = {'mdaq'};
 MDAQDAC.SrcPaths = {'mdaq'};
 MDAQDAC.StartFcnSpec = 'DACInit(uint8 p1, uint8 p2[], uint8 p3, uint8 p4, uint8 p5 )';
@@ -41,8 +41,8 @@ MDAQDAC.Options.supportsMultipleExecInstances = true;
 %% QEP
 MDAQQEP = legacy_code('initialize');
 MDAQQEP.SFunctionName = 'sfun_MDAQQEP';
-MDAQQEP.HeaderFiles = {'mdaqenc.h'};
-MDAQQEP.SourceFiles = {'mdaqenc.c','eqep.c','utils.c','pru.c', 'mdaq_dio.c', 'gpio.c'};
+MDAQQEP.HeaderFiles = {'mdaqenc.h','mdaq_enc.h'};
+MDAQQEP.SourceFiles = {'mdaqenc.c'};
 MDAQQEP.IncPaths = {'mdaq'};
 MDAQQEP.SrcPaths = {'mdaq'};
 MDAQQEP.StartFcnSpec = 'ENCInit(uint8 p1)';
@@ -54,12 +54,12 @@ MDAQQEP.Options.supportsMultipleExecInstances = true;
 %% Encoder
 MDAQENC = legacy_code('initialize');
 MDAQENC.SFunctionName = 'sfun_MDAQENC';
-MDAQENC.HeaderFiles = {'mdaqenc.h'};
-MDAQENC.SourceFiles = {'mdaqenc.c','eqep.c','utils.c','pru.c', 'mdaq_dio.c', 'gpio.c'};
+MDAQENC.HeaderFiles = {'mdaq_pru.h'};
+MDAQENC.SourceFiles = {'mdaqenc2.c'};
 MDAQENC.IncPaths = {'mdaq'};
 MDAQENC.SrcPaths = {'mdaq'};
-MDAQENC.StartFcnSpec = 'ENC2Init()';
-MDAQENC.OutputFcnSpec = 'ENC2Step(uint8 u1, uint8 u2, uint8 u3, uint8 u4, int32 y1[1], uint8 y2[1], int32 y3[1], uint8 y4[1], int32 y5[1], uint8 y6[1], int32 y7[1], uint8 y8[1])';
+MDAQENC.StartFcnSpec = 'ENC2Init(uint8 p1)';
+MDAQENC.OutputFcnSpec = 'ENC2Step(uint8 p1,uint8 u1, uint8 u2, uint8 u3, uint8 u4, int32 y1[1], uint8 y2[1], int32 y3[1], uint8 y4[1], int32 y5[1], uint8 y6[1], int32 y7[1], uint8 y8[1])';
 MDAQENC.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQENC.Options.supportsMultipleExecInstances = true;
@@ -67,11 +67,11 @@ MDAQENC.Options.supportsMultipleExecInstances = true;
 % PRU REG GET
 MDAQPRUREGSET = legacy_code('initialize');
 MDAQPRUREGSET.SFunctionName = 'sfun_MDAQPRUREGSET';
-MDAQPRUREGSET.SourceFiles = {'mdaqpru.c','pru.c'};
+MDAQPRUREGSET.HeaderFiles = {'mdaq_pru.h'};
+MDAQPRUREGSET.SourceFiles = {'mdaqpru.c'};
 MDAQPRUREGSET.IncPaths = {'mdaq'};
 MDAQPRUREGSET.SrcPaths = {'mdaq'};
-MDAQPRUREGSET.StartFcnSpec = 'PRUInit()';
-MDAQPRUREGSET.OutputFcnSpec = 'PRURegSetStep(uint8 p1, uint32 u1)';
+MDAQPRUREGSET.OutputFcnSpec = 'PRURegSetStep(uint8 p1, uint8 p2, uint32 u1)';
 MDAQPRUREGSET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQPRUREGSET.Options.supportsMultipleExecInstances = true;
@@ -79,11 +79,11 @@ MDAQPRUREGSET.Options.supportsMultipleExecInstances = true;
 % PRU REG SET
 MDAQPRUREGGET = legacy_code('initialize');
 MDAQPRUREGGET.SFunctionName = 'sfun_MDAQPRUREGGET';
-MDAQPRUREGGET.SourceFiles = {'mdaqpru.c','pru.c'};
+MDAQPRUREGGET.HeaderFiles = {'mdaq_pru.h'};
+MDAQPRUREGGET.SourceFiles = {'mdaqpru.c'};
 MDAQPRUREGGET.IncPaths = {'mdaq'};
 MDAQPRUREGGET.SrcPaths = {'mdaq'};
-MDAQPRUREGGET.StartFcnSpec = 'PRUInit()';
-MDAQPRUREGGET.OutputFcnSpec = 'PRURegGetStep(uint8 p1, uint32 y1[1])';
+MDAQPRUREGGET.OutputFcnSpec = 'PRURegGetStep(uint8 p1, uint8 p2, uint32 y1[1])';
 MDAQPRUREGGET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQPRUREGGET.Options.supportsMultipleExecInstances = true;
@@ -91,11 +91,12 @@ MDAQPRUREGGET.Options.supportsMultipleExecInstances = true;
 % MEM Write
 MDAQMEMWR = legacy_code('initialize');
 MDAQMEMWR.SFunctionName = 'sfun_MDAQMEMRW';
+MDAQMEMWR.HeaderFiles = {'mdaqmem.h'};
 MDAQMEMWR.SourceFiles = {'mdaqmemwr.c'};
 MDAQMEMWR.IncPaths = {'mdaq'};
 MDAQMEMWR.SrcPaths = {'mdaq'};
-MDAQMEMWR.StartFcnSpec = 'MEMWRInit(uint32 p1, uint8 p2)';
-MDAQMEMWR.OutputFcnSpec = 'MEMWRStep(single u1[], uint8 p2)';
+MDAQMEMWR.StartFcnSpec = 'MEMWRInit(uint32 p1, uint32 p2)';
+MDAQMEMWR.OutputFcnSpec = 'MEMWRStep(single u1[p3], uint32 p1, uint32 p3, uint32 p4, uint32 p2)';
 MDAQMEMWR.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQMEMWR.Options.supportsMultipleExecInstances = true;
@@ -104,34 +105,32 @@ MDAQMEMWR.Options.supportsMultipleExecInstances = true;
 MDAQMEMRD = legacy_code('initialize');
 MDAQMEMRD.SFunctionName = 'sfun_MDAQMEMRD';
 % MDAQMEMWR.HeaderFiles = {'mdaqenc.h'};
+MDAQMEMRD.HeaderFiles = {'mdaqmem.h'};
 MDAQMEMRD.SourceFiles = {'mdaqmemrd.c'};
 MDAQMEMRD.IncPaths = {'mdaq'};
 MDAQMEMRD.SrcPaths = {'mdaq'};
-MDAQMEMRD.StartFcnSpec = 'MEMRDInit(uint32 p1, uint8 p2 )';
-MDAQMEMRD.OutputFcnSpec = 'MEMRDStep(single y1[p2], uint8 p2)';
+MDAQMEMRD.StartFcnSpec = 'MEMRDInit(uint32 p1)';
+MDAQMEMRD.OutputFcnSpec = 'MEMRDStep(single y1[p3], uint32 p1, uint32 p3, uint32 p4, uint32 p2)';
 MDAQMEMRD.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 MDAQMEMRD.Options.supportsMultipleExecInstances = true;
 
-%% MOTOR
-MDAQMOTOR = legacy_code('initialize');
-MDAQMOTOR.SFunctionName = 'sfun_MDAQMOTOR';
-MDAQMOTOR.HeaderFiles = {'mdaqmotor.h'};
-MDAQMOTOR.SourceFiles = {'mdaqmotor.c','pru.c'};
-MDAQMOTOR.IncPaths = {'mdaq'};
-MDAQMOTOR.SrcPaths = {'mdaq'};
-MDAQMOTOR.StartFcnSpec = 'MOTORInit(uint8 p1, uint8 p2, uint8 p3)';
-MDAQMOTOR.OutputFcnSpec = 'MOTORStep(uint8 p1, uint8 u1, uint8 u2, uint32 u3)';
-MDAQMOTOR.TerminateFcnSpec = 'MOTORTerminate(uint8 p1)';
-MDAQMOTOR.SampleTime = 'parameterized';
+% DIO Config 
+MDAQDIOCONF = legacy_code('initialize');
+MDAQDIOCONF.SFunctionName = 'sfun_MDAQDIOCONF';
+MDAQDIOCONF.HeaderFiles = {'mdaqdio.h', 'mdaq_dio.h'};
+MDAQDIOCONF.SourceFiles = {'mdaqdio.c'};
+MDAQDIOCONF.IncPaths = {'mdaq'};
+MDAQDIOCONF.SrcPaths = {'mdaq'};
+MDAQDIOCONF.StartFcnSpec = 'DIOConfig(uint8 p1, uint8 p2, uint8 p3, uint8 p4, uint8 p5, uint8 p6, uint8 p7, uint8 p8, uint8 p9, uint8 p10)';
 % Support calling from within For-Each subsystem
-MDAQMOTOR.Options.supportsMultipleExecInstances = true;
+MDAQDIOCONF.Options.supportsMultipleExecInstances = true;
 
 % Digital IO set 
 MDAQDIOSET = legacy_code('initialize');
 MDAQDIOSET.SFunctionName = 'sfun_MDAQDIOSET';
-MDAQDIOSET.HeaderFiles = {'mdaqdio.h'};
-MDAQDIOSET.SourceFiles = {'mdaqdio.c', 'mdaq_dio.c','gpio.c'};
+MDAQDIOSET.HeaderFiles = {'mdaqdio.h', 'mdaq_dio.h'};
+MDAQDIOSET.SourceFiles = {'mdaqdio.c'};
 MDAQDIOSET.IncPaths = {'mdaq'};
 MDAQDIOSET.SrcPaths = {'mdaq'};
 MDAQDIOSET.StartFcnSpec = 'DIOInit(uint8 p1, uint8 p2, uint8 p3)';
@@ -144,11 +143,10 @@ MDAQDIOSET.Options.supportsMultipleExecInstances = true;
 % Digital IO get 
 MDAQDIOGET = legacy_code('initialize');
 MDAQDIOGET.SFunctionName = 'sfun_MDAQDIOGET';
-MDAQDIOGET.HeaderFiles = {'mdaqdio.h'};
-MDAQDIOGET.SourceFiles = {'mdaqdio.c','mdaq_dio.c','gpio.c'};
+MDAQDIOGET.HeaderFiles = {'mdaqdio.h', 'mdaq_dio.h'};
+MDAQDIOGET.SourceFiles = {'mdaqdio.c'};
 MDAQDIOGET.IncPaths = {'mdaq'};
 MDAQDIOGET.SrcPaths = {'mdaq'};
-MDAQDIOGET.StartFcnSpec = 'DIOInit(uint8 p1, uint8 p2, uint8 p3)';
 MDAQDIOGET.OutputFcnSpec = 'DIOGetStep(uint8 p1, uint8 y1[1])';
 MDAQDIOGET.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
@@ -157,11 +155,10 @@ MDAQDIOGET.Options.supportsMultipleExecInstances = true;
 % Function key 
 MDAQFNCKEY = legacy_code('initialize');
 MDAQFNCKEY.SFunctionName = 'sfun_MDAQFNCKEY';
-MDAQFNCKEY.HeaderFiles = {'mdaqdio.h'};
-MDAQFNCKEY.SourceFiles = {'mdaqdio.c','mdaq_dio.c','gpio.c'};
+MDAQFNCKEY.HeaderFiles = {'mdaqdio.h', 'mdaq_dio.h'};
+MDAQFNCKEY.SourceFiles = {'mdaqdio.c'};
 MDAQFNCKEY.IncPaths = {'mdaq'};
 MDAQFNCKEY.SrcPaths = {'mdaq'};
-MDAQFNCKEY.StartFcnSpec = 'DIOFncKeyInit(uint8 p1)';
 MDAQFNCKEY.OutputFcnSpec = 'DIOFncKeyStep(uint8 p1, uint8 y1[1])';
 MDAQFNCKEY.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
@@ -170,8 +167,8 @@ MDAQFNCKEY.Options.supportsMultipleExecInstances = true;
 % UART Config 
 MDAQUARTCONF = legacy_code('initialize');
 MDAQUARTCONF.SFunctionName = 'sfun_MDAQUARTCONF';
-MDAQUARTCONF.HeaderFiles = {'mdaquart.h'};
-MDAQUARTCONF.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
+MDAQUARTCONF.HeaderFiles = {'mdaquart.h', 'mdaq_uart.h'};
+MDAQUARTCONF.SourceFiles = {'mdaquart.c'};
 MDAQUARTCONF.IncPaths = {'mdaq'};
 MDAQUARTCONF.SrcPaths = {'mdaq'};
 MDAQUARTCONF.StartFcnSpec = 'UARTConfig(uint8 p1, uint8 p2, uint8 p3, uint8 p4, uint8 p5, uint8 p6)';
@@ -182,8 +179,8 @@ MDAQUARTCONF.Options.supportsMultipleExecInstances = true;
 % UART Send 
 MDAQUARTSEND = legacy_code('initialize');
 MDAQUARTSEND.SFunctionName = 'sfun_MDAQUARTSEND';
-MDAQUARTSEND.HeaderFiles = {'mdaquart.h'};
-MDAQUARTSEND.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
+MDAQUARTSEND.HeaderFiles = {'mdaquart.h', 'mdaq_uart.h'};
+MDAQUARTSEND.SourceFiles = {'mdaquart.c'};
 MDAQUARTSEND.IncPaths = {'mdaq'};
 MDAQUARTSEND.SrcPaths = {'mdaq'};
 MDAQUARTSEND.OutputFcnSpec = 'UARTSend(uint8 p1, uint8 u1[p2], uint8 p2)';
@@ -194,8 +191,8 @@ MDAQUARTSEND.Options.supportsMultipleExecInstances = true;
 % UART Receive 
 MDAQUARTRECV = legacy_code('initialize');
 MDAQUARTRECV.SFunctionName = 'sfun_MDAQUARTRECV';
-MDAQUARTRECV.HeaderFiles = {'mdaquart.h'};
-MDAQUARTRECV.SourceFiles = {'mdaquart.c', 'mdaq_uart.c', 'rpc.c', 'utils.c'};
+MDAQUARTRECV.HeaderFiles = {'mdaquart.h', 'mdaq_uart.h'};
+MDAQUARTRECV.SourceFiles = {'mdaquart.c'};
 MDAQUARTRECV.IncPaths = {'mdaq'};
 MDAQUARTRECV.SrcPaths = {'mdaq'};
 MDAQUARTRECV.OutputFcnSpec = 'UARTRecv(uint8 p1, uint8 y1[p2], int32 y2[1], uint8 p2, uint8 p3, uint8 p4, uint32 p5, uint8 p6)';
@@ -206,8 +203,8 @@ MDAQUARTRECV.Options.supportsMultipleExecInstances = true;
 % PWM
 MDAQPWM = legacy_code('initialize');
 MDAQPWM.SFunctionName = 'sfun_MDAQPWM';
-MDAQPWM.HeaderFiles = {'mdaqpwm.h'};
-MDAQPWM.SourceFiles = {'mdaqpwm.c', 'mdaq_pwm.c', 'ehrpwm.c', 'utils.c'};
+MDAQPWM.HeaderFiles = {'mdaqpwm.h', 'mdaq_pwm.h'};
+MDAQPWM.SourceFiles = {'mdaqpwm.c'};
 MDAQPWM.IncPaths = {'mdaq'};
 MDAQPWM.SrcPaths = {'mdaq'};
 MDAQPWM.StartFcnSpec = 'PWMInit(uint8 p1, uint32 p2, uint8 p3)';
@@ -219,8 +216,8 @@ MDAQPWM.Options.supportsMultipleExecInstances = true;
 
 RCCONTROLLER = legacy_code('initialize');
 RCCONTROLLER.SFunctionName = 'sfun_RCCONTROLLER';
-RCCONTROLLER.HeaderFiles = {'rc_controller.h'};
-RCCONTROLLER.SourceFiles = {'rc_controller.c', 'utils.c','pru.c', 'mdaq_dio.c', 'gpio.c'};
+RCCONTROLLER.HeaderFiles = {'rc_controller.h', 'mdaq_pru.h'};
+RCCONTROLLER.SourceFiles = {'rc_controller.c'};
 RCCONTROLLER.IncPaths = {'mdaq'};
 RCCONTROLLER.SrcPaths = {'mdaq'};
 RCCONTROLLER.StartFcnSpec = 'RCControllerInit(uint8 p1)';
@@ -231,8 +228,8 @@ RCCONTROLLER.Options.supportsMultipleExecInstances = true;
 
 TOFILE = legacy_code('initialize');
 TOFILE.SFunctionName = 'sfun_TOFILE';
-TOFILE.HeaderFiles = {'mdaqfile.h'};
-TOFILE.SourceFiles = {'mdaqfile.c', 'mdaq_file.c', 'rpc.c', 'utils.c'};
+TOFILE.HeaderFiles = {'mdaqfile.h', 'mdaq_file.h'};
+TOFILE.SourceFiles = {'mdaqfile.c'};
 TOFILE.IncPaths = {'mdaq'};
 TOFILE.SrcPaths = {'mdaq'};
 TOFILE.StartFcnSpec = 'ToFileInit(int8 p1[], uint8 p2, uint32 p3, uint8 p4, uint8 p5)';
@@ -242,38 +239,12 @@ TOFILE.SampleTime = 'parameterized';
 % Support calling from within For-Each subsystem
 TOFILE.Options.supportsMultipleExecInstances = true;
 
-FROMFILE = legacy_code('initialize');
-FROMFILE.SFunctionName = 'sfun_FROMFILE';
-FROMFILE.HeaderFiles = {'mdaqfile.h'};
-FROMFILE.SourceFiles = {'mdaqfile.c', 'mdaq_file.c', 'rpc.c', 'utils.c'};
-FROMFILE.IncPaths = {'mdaq'};
-FROMFILE.SrcPaths = {'mdaq'};
-FROMFILE.StartFcnSpec = 'FromFileInit(int8 p1[], uint8 p2, uint32 p3, uint8 p4, uint8 p5)';
-FROMFILE.OutputFcnSpec = 'FromFileStep(double y1[p4], uint32 p3, uint8 p4, uint8 p5)';
-FROMFILE.TerminateFcnSpec = 'FromFileTerminate()';
-FROMFILE.SampleTime = 'parameterized';
-% Support calling from within For-Each subsystem
-FROMFILE.Options.supportsMultipleExecInstances = true;
-
-OUTSTREAM = legacy_code('initialize');
-OUTSTREAM.SFunctionName = 'sfun_OUTSTREAM';
-OUTSTREAM.HeaderFiles = {'mdaqstream.h'};
-OUTSTREAM.SourceFiles = {'mdaqstream.c', 'mdaq_stream.c', 'utils.c'};
-OUTSTREAM.IncPaths = {'mdaq'};
-OUTSTREAM.SrcPaths = {'mdaq'};
-OUTSTREAM.StartFcnSpec = 'OutStreamInit(uint8 p1, uint8 p2)';
-OUTSTREAM.OutputFcnSpec = 'OutStreamStep(double u1[p2], uint8 p1, uint8 p2)';
-OUTSTREAM.TerminateFcnSpec = 'OutStreamTerminate(uint8 p1)';
-OUTSTREAM.SampleTime = 'parameterized';
-% Support calling from within For-Each subsystem
-OUTSTREAM.Options.supportsMultipleExecInstances = true;
-
 %% TCP/UDP support
 % UDP Send
 MDAQUDPSEND = legacy_code('initialize');
 MDAQUDPSEND.SFunctionName = 'sfun_MDAQUDPSEND';
-MDAQUDPSEND.HeaderFiles = {'mdaqsocket.h'};
-MDAQUDPSEND.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQUDPSEND.HeaderFiles = {'mdaqsocket.h','mdaq_socket.h'};
+MDAQUDPSEND.SourceFiles = {'mdaqsocket.c'};
 MDAQUDPSEND.IncPaths = {'mdaq'};
 MDAQUDPSEND.SrcPaths = {'mdaq'};
 MDAQUDPSEND.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
@@ -286,8 +257,8 @@ MDAQUDPSEND.Options.supportsMultipleExecInstances = true;
 % UDP Receive
 MDAQUDPRECV = legacy_code('initialize');
 MDAQUDPRECV.SFunctionName = 'sfun_MDAQUDPRECV';
-MDAQUDPRECV.HeaderFiles = {'mdaqsocket.h'};
-MDAQUDPRECV.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQUDPRECV.HeaderFiles = {'mdaqsocket.h','mdaq_socket.h'};
+MDAQUDPRECV.SourceFiles = {'mdaqsocket.c'};
 MDAQUDPRECV.IncPaths = {'mdaq'};
 MDAQUDPRECV.SrcPaths = {'mdaq'};
 MDAQUDPRECV.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
@@ -300,8 +271,8 @@ MDAQUDPRECV.Options.supportsMultipleExecInstances = true;
 % TCP Send
 MDAQTCPSEND = legacy_code('initialize');
 MDAQTCPSEND.SFunctionName = 'sfun_MDAQTCPSEND';
-MDAQTCPSEND.HeaderFiles = {'mdaqsocket.h'};
-MDAQTCPSEND.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQTCPSEND.HeaderFiles = {'mdaqsocket.h','mdaq_socket.h'};
+MDAQTCPSEND.SourceFiles = {'mdaqsocket.c'};
 MDAQTCPSEND.IncPaths = {'mdaq'};
 MDAQTCPSEND.SrcPaths = {'mdaq'};
 MDAQTCPSEND.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
@@ -314,8 +285,8 @@ MDAQTCPSEND.Options.supportsMultipleExecInstances = true;
 % TCP Receive
 MDAQTCPRECV = legacy_code('initialize');
 MDAQTCPRECV.SFunctionName = 'sfun_MDAQTCPRECV';
-MDAQTCPRECV.HeaderFiles = {'mdaqsocket.h'};
-MDAQTCPRECV.SourceFiles = {'mdaq_net.c','mdaqsocket.c','rpc.c','utils.c'};
+MDAQTCPRECV.HeaderFiles = {'mdaqsocket.h','mdaq_socket.h'};
+MDAQTCPRECV.SourceFiles = {'mdaqsocket.c'};
 MDAQTCPRECV.IncPaths = {'mdaq'};
 MDAQTCPRECV.SrcPaths = {'mdaq'};
 MDAQTCPRECV.StartFcnSpec = 'SocketOpen(int8 p1[], int32 p2, uint8 p3, int32 p4, uint8 p5)';
@@ -326,8 +297,8 @@ MDAQTCPRECV.Options.supportsMultipleExecInstances = true;
 
 %% Put multiple registration files together
 def = [MDAQLED(:);MDAQADC(:);MDAQDAC(:);MDAQQEP(:);MDAQENC(:);MDAQMEMWR(:);MDAQMEMRD(:);MDAQPRUREGGET(:);...
-       MDAQPRUREGSET(:);MDAQMOTOR(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
-       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);FROMFILE(:);OUTSTREAM(:);MDAQUDPSEND(:);MDAQUDPRECV(:);...
+       MDAQPRUREGSET(:);MDAQDIOCONF(:);MDAQDIOSET(:);MDAQDIOGET(:);MDAQFNCKEY(:);MDAQUARTCONF(:);MDAQUARTSEND(:);...
+       MDAQUARTRECV(:);MDAQPWM(:);RCCONTROLLER(:);TOFILE(:);MDAQUDPSEND(:);MDAQUDPRECV(:);...
        MDAQTCPSEND(:);MDAQTCPRECV(:)];
 
 %% Legacy Code Tool

@@ -14,7 +14,7 @@
 
 #define	O_RDONLY	00000000		/* open for reading only */
 #define	O_WRONLY	00000001		/* open for writing only */
-#define	O_RDWR		00000002	/* open for reading and writing */
+#define	O_RDWR		00000002		/* open for reading and writing */
 
 #define	O_NONBLOCK	00004000		/* no delay */
 #define	O_APPEND	00002000		/* set append mode */

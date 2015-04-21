@@ -12,14 +12,11 @@
 
 #include <stdint.h>
 
-enum mdaq_pwm_channels
+enum mdaq_pwm_ids
 {
-	PWM0A = 0,
-	PWM0B,
-	PWM1A,
-	PWM1B,
-	PWM2A,
-	PWM2B
+	PWM1 = 1,
+	PWM2,
+	PWM3
 };
 
 enum mdaq_pwm_polarity
@@ -28,11 +25,8 @@ enum mdaq_pwm_polarity
 	ACTIVE_LOW
 };
 
-int mdaq_pwm_init(void);
-int mdaq_pwm_start(uint8_t channel);
-int mdaq_pwm_stop(uint8_t channel);
-int mdaq_pwm_setup(uint8_t channel, uint32_t period, uint8_t polarity);
-int mdaq_pwm_set_duty(uint8_t channel, float duty);
-int mdaq_pwm_set_polarity(uint8_t channel, uint8_t polarity);
+int mdaq_pwm_init(uint8_t module, int32_t period, uint8_t active_low, float a_channel, float b_channel);
+void mdaq_pwm_write(uint8_t module, float a_channel, float b_channel);
+
 
 #endif /* MDAQ_PWM_H_ */

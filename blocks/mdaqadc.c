@@ -1,41 +1,47 @@
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-#include "mdaq_ain.h"
-
-static mdaq_ain_t ch_config;
+#include <string.h>
+#include "mdaq_ai.h"
 #endif 
 
 void ADCInit(unsigned char Converter, unsigned char *Channel, 
-		unsigned char ChannelCount, unsigned char Range, 
-		unsigned char Polarity, unsigned char Mode)
+        unsigned char ChannelCount, unsigned char Range, 
+        unsigned char Polarity, unsigned char Mode)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
+    uint32_t range = Range, polarity = Polarity, mode = Mode; 
 
-	if( ChannelCount > MDAQ_AIN_MAX )
-		return;
+    if( ChannelCount > AI16 )
+        return;
 
-	mdaq_ain_init(Converter);
+    range = (range == 1 ? AI_10V : AI_5V);
+    polarity = (polarity == 2 ? AI_BIPOLAR : AI_UNIPOLAR);
 
-	mdaq_ain_config_init(&ch_config);
+    /* TODO: support for differential mode */
+    mode = (mode == 1 ? AI_SINGLE : AI_SINGLE);
 
-	ch_config.polarity = (mdaq_ain_pol_t)Polarity;
-	ch_config.range = (mdaq_ain_range_t)Range;
-	ch_config.mode = (mdaq_ain_mode_t)Mode;
+    mdaq_ai_init(Converter, range, polarity, mode);
+#if 0 
+    if (Converter > ADC02)
+        mdaq_ai_config_ch(Channel, ChannelCount);
+#endif 
 #endif
 }
 
 void ADCStep(unsigned short *adc_value, double *value, 
-		unsigned char *Channel, unsigned char ChannelCount)
+        unsigned char *Channel, unsigned char ChannelCount)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-	int count;
-	float data[MDAQ_AIN_MAX];
-	if( ChannelCount > MDAQ_AIN_MAX )
-		return;
-	
-	mdaq_ain_scan(&ch_config, Channel, ChannelCount, adc_value, data);  
+    int count;
+    float data[AI16];
 
-	for (count = 0; count < ChannelCount; count++)
-		value[count] = (double)data[count]; 
+    mdaq_ai_read(Channel, ChannelCount, adc_value, data);	
+
+    for (count = 0; count < ChannelCount; count++)
+        value[count] = (double)data[count]; 
 #endif
 }
-
+#if 0 
+int mdaq_ai_init(uint8_t converter, uint32_t range, uint32_t polarity, uint32_t mode);
+int mdaq_ai_config_ch(uint8_t ch[], uint8_t ch_count);
+int mdaq_ai_read(uint8_t ch[], uint8_t ch_count, uint16_t *adc_value, float *value);
+#endif 
