@@ -32,7 +32,20 @@ cd(curpath);
 disp('<strong>Building TI SYS/BIOS real-time operating system for MicroDAQ</strong>'); 
 % Fixes errors related to java on some systems
 if ispc
-	setenv('PATH',[getenv('PATH'),';',fullfile(getpref('microdaq','XDCRoot'),'jre','bin')]);
+    xdcjava = fullfile(getpref('microdaq','XDCRoot'),'jre','bin');
+    if isdir(xdcjava)
+        setenv('PATH',[getenv('PATH'),';',xdcjava]);
+    else
+        % Recent XDCTools don't ship Java. Instead, it relies on
+        % XDCTOOLS_JAVA_HOME environment variable
+        [status, out] = system('java -version');
+        if (status == 0)
+            javaver = regexp(out,'(?<=").*(?=")','match','once');
+            setenv('XDCTOOLS_JAVA_HOME',['C:\Program Files (x86)\Java\jre',javaver]);
+        else
+            error('Unable to find Java installation required for XDCTools. Make sure you have 32-bit Java installed!');
+        end
+    end
 end
 
 % Run XDC Tools on SYS/BIOS configuration file
