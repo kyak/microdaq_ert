@@ -2,15 +2,13 @@
 #include "mdaq_ao.h"
 #endif
 
-#define MDAQ_AOUT_MAX   (8)
+#define MDAQ_AOUT_MAX   (16)
 
 void DACInit( unsigned char converter, unsigned char *channels, 
-        unsigned char channel_count, unsigned char update_mode, 
+        unsigned char channel_count, unsigned char mode, 
         unsigned char update_mode_tirg )
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-    uint32_t mode = update_mode; 
-    mode = (mode == 1 ? AO_ASYNC : AO_SYNC);
     mdaq_ao_init(converter, mode);
 #endif
 }

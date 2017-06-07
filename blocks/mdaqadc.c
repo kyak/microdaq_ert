@@ -8,22 +8,21 @@ void ADCInit(unsigned char Converter, unsigned char *Channel,
         unsigned char Polarity, unsigned char Mode)
 {
 #if (!defined MATLAB_MEX_FILE) && (!defined MDL_REF_SIM_TGT)
-    uint32_t range = Range, polarity = Polarity, mode = Mode; 
+    uint32_t range, polarity, mode; 
 
     if( ChannelCount > AI16 )
         return;
 
+	range = 1 << (Range - 1);
     range = (range == 1 ? AI_10V : AI_5V);
-    polarity = (polarity == 2 ? AI_BIPOLAR : AI_UNIPOLAR);
-
-    /* TODO: support for differential mode */
-    mode = (mode == 1 ? AI_SINGLE : AI_SINGLE);
+    polarity = (Polarity == 2 ? AI_BIPOLAR : AI_UNIPOLAR);
+    mode = (Mode == 1 ? AI_SINGLE : AI_DIFF);
 
     mdaq_ai_init(Converter, range, polarity, mode);
-#if 0 
-    if (Converter > ADC02)
+
+    if (Converter > ADC02 && Converter < ADC06)
         mdaq_ai_config_ch(Channel, ChannelCount);
-#endif 
+
 #endif
 }
 
