@@ -22,7 +22,7 @@ slConfigUISetVal(hDlg, hSrc, 'GenerateSampleERTMain', 'off');
 slConfigUISetEnabled(hDlg, hSrc, 'GenerateSampleERTMain',0);
 
 % Use shipping Code Replacement Library for C674x
-slConfigUISetVal(hDlg, hSrc, 'CodeReplacementLibrary', 'TI C674x');
+%slConfigUISetVal(hDlg, hSrc, 'CodeReplacementLibrary', 'TI C674x');
 
 % Configure PostCodeGen Command to execute
 slConfigUISetVal(hDlg, hSrc, 'PostCodeGenCommand', 'microdaq_postcodegen(buildInfo)');
