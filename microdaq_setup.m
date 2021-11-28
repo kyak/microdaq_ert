@@ -29,6 +29,9 @@ cd('../blocks');
 lct_genblocks;
 cd(curpath);
 
+% Register toolchain
+microdaq_tc_refresh;
+
 disp('<strong>Building TI SYS/BIOS real-time operating system for MicroDAQ</strong>'); 
 % Fixes errors related to java on some systems
 if ispc

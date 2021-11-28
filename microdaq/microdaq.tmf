@@ -13,6 +13,9 @@ ON_TARGET_WAIT_FOR_STARTM   = |>ON_TARGET_WAIT_FOR_STARTM<|
 # Enable debugging
 DEBUG_BUILD         = |>DEBUG_BUILD_MODE<|
 
+# External mode
+TOOLCHAIN_NAME      = "MicroDAQ Toolchain"
+
 #---------------------- Tokens expanded by make_rtw ----------------------------
 MODEL                   = |>MODEL_NAME<|
 MODULES                 = |>MODEL_MODULES<|
